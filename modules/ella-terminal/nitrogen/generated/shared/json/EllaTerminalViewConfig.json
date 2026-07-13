@@ -1,0 +1,9 @@
+{
+  "uiViewClassName": "EllaTerminalView",
+  "supportsRawText": false,
+  "bubblingEventTypes": {},
+  "directEventTypes": {},
+  "validAttributes": {
+    "hybridRef": true
+  }
+}

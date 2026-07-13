@@ -1,0 +1,33 @@
+{
+  "name": "ella-terminal",
+  "version": "0.0.1",
+  "description": "Native Nitro terminal view for Ella",
+  "main": "src/index.ts",
+  "react-native": "src/index.ts",
+  "source": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "src",
+    "android",
+    "ios",
+    "nitrogen",
+    "nitro.json",
+    "react-native.config.js",
+    "app.plugin.js",
+    "*.podspec"
+  ],
+  "scripts": {
+    "specs": "nitrogen"
+  },
+  "license": "UNLICENSED",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-nitro-modules": "*"
+  },
+  "devDependencies": {
+    "nitrogen": "*",
+    "react-native-nitro-modules": "*",
+    "typescript": "*"
+  }
+}

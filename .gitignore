@@ -39,3 +39,9 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Keep local native module sources under version control.
+!/modules/
+!/modules/ella-terminal/
+!/modules/ella-terminal/android/
+!/modules/ella-terminal/ios/
