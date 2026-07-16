@@ -8,12 +8,35 @@
 #pragma once
 
 // Forward declarations of C++ defined types
+// Forward declaration of `ConnectionConfig` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct ConnectionConfig; }
+// Forward declaration of `ConnectionStateEvent` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct ConnectionStateEvent; }
+// Forward declaration of `ConnectionState` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { enum class ConnectionState; }
+// Forward declaration of `HostKeyRequestEvent` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct HostKeyRequestEvent; }
 // Forward declaration of `HybridEllaTerminalViewSpec` to properly resolve imports.
 namespace margelo::nitro::ella::terminal { class HybridEllaTerminalViewSpec; }
+// Forward declaration of `TerminalErrorCode` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { enum class TerminalErrorCode; }
+// Forward declaration of `TrustedHostKey` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct TrustedHostKey; }
 
 // Include C++ defined types
+#include "ConnectionConfig.hpp"
+#include "ConnectionState.hpp"
+#include "ConnectionStateEvent.hpp"
+#include "HostKeyRequestEvent.hpp"
 #include "HybridEllaTerminalViewSpec.hpp"
+#include "TerminalErrorCode.hpp"
+#include "TrustedHostKey.hpp"
+#include <NitroModules/Result.hpp>
+#include <exception>
+#include <functional>
 #include <memory>
+#include <optional>
+#include <string>
 
 // C++ helpers for Swift
 #include "EllaTerminal-Swift-Cxx-Bridge.hpp"

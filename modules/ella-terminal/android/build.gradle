@@ -5,7 +5,9 @@ buildscript {
   }
 
   dependencies {
-    classpath "com.android.tools.build:gradle:9.2.1"
+    classpath "com.android.tools.build:gradle:8.13.2"
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.21"
+    classpath "org.jetbrains.kotlin:compose-compiler-gradle-plugin:2.3.21"
   }
 }
 
@@ -20,12 +22,9 @@ def isNewArchitectureEnabled() {
 
 apply plugin: "com.android.library"
 apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "org.jetbrains.kotlin.plugin.compose"
 apply from: "../nitrogen/generated/android/EllaTerminal+autolinking.gradle"
 apply from: "./fix-prefab.gradle"
-
-if (isNewArchitectureEnabled()) {
-  apply plugin: "com.facebook.react"
-}
 
 def getExtOrDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties["EllaTerminal_" + name]
@@ -88,6 +87,7 @@ android {
 
   buildFeatures {
     buildConfig true
+    compose true
     prefab true
   }
 
@@ -98,28 +98,28 @@ android {
   lintOptions { disable "GradleCompatible" }
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+    coreLibraryDesugaringEnabled true
   }
 
-  sourceSets {
-    main {
-      if (isNewArchitectureEnabled()) {
-        java.srcDirs += ["${project.buildDir}/generated/source/codegen/java"]
-      }
-    }
-  }
+  kotlinOptions { jvmTarget = "17" }
+
 }
 
 repositories {
   google()
   mavenCentral()
-  maven { url "https://jitpack.io" }
 }
 
 dependencies {
-  implementation "com.facebook.react:react-native:+"
+  compileOnly "com.facebook.react:react-android"
   implementation project(":react-native-nitro-modules")
-  implementation "com.termux.termux-app:terminal-view:0.118.0"
-  implementation "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava"
+  implementation platform("androidx.compose:compose-bom:2026.05.01")
+  implementation "androidx.compose.foundation:foundation"
+  implementation "androidx.compose.ui:ui"
+  implementation "com.hierynomus:sshj:0.40.0"
+  implementation "org.connectbot:termlib:0.1.0"
+  testImplementation "junit:junit:4.13.2"
+  coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.5"
 }

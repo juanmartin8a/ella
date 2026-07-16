@@ -7,9 +7,37 @@
 
 #include "JHybridEllaTerminalViewSpec.hpp"
 
+// Forward declaration of `ConnectionStateEvent` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct ConnectionStateEvent; }
+// Forward declaration of `ConnectionState` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { enum class ConnectionState; }
+// Forward declaration of `TerminalErrorCode` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { enum class TerminalErrorCode; }
+// Forward declaration of `HostKeyRequestEvent` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct HostKeyRequestEvent; }
+// Forward declaration of `ConnectionConfig` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct ConnectionConfig; }
+// Forward declaration of `TrustedHostKey` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct TrustedHostKey; }
 
-
-
+#include "ConnectionStateEvent.hpp"
+#include <functional>
+#include <optional>
+#include "JFunc_void_ConnectionStateEvent.hpp"
+#include <NitroModules/JNICallable.hpp>
+#include "JConnectionStateEvent.hpp"
+#include <string>
+#include "ConnectionState.hpp"
+#include "JConnectionState.hpp"
+#include "TerminalErrorCode.hpp"
+#include "JTerminalErrorCode.hpp"
+#include "HostKeyRequestEvent.hpp"
+#include "JFunc_void_HostKeyRequestEvent.hpp"
+#include "JHostKeyRequestEvent.hpp"
+#include "ConnectionConfig.hpp"
+#include "JConnectionConfig.hpp"
+#include "TrustedHostKey.hpp"
+#include "JTrustedHostKey.hpp"
 
 namespace margelo::nitro::ella::terminal {
 
@@ -41,9 +69,53 @@ namespace margelo::nitro::ella::terminal {
   }
 
   // Properties
-  
+  std::optional<std::function<void(const ConnectionStateEvent& /* event */)>> JHybridEllaTerminalViewSpec::getOnConnectionStateChange() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JFunc_void_ConnectionStateEvent::javaobject>()>("getOnConnectionStateChange_cxx");
+    auto __result = method(_javaPart);
+    return __result != nullptr ? std::make_optional([&]() -> std::function<void(const ConnectionStateEvent& /* event */)> {
+      if (__result->isInstanceOf(JFunc_void_ConnectionStateEvent_cxx::javaClassStatic())) [[likely]] {
+        auto downcast = jni::static_ref_cast<JFunc_void_ConnectionStateEvent_cxx::javaobject>(__result);
+        return downcast->cthis()->getFunction();
+      } else {
+        auto __resultRef = jni::make_global(__result);
+        return JNICallable<JFunc_void_ConnectionStateEvent, void(ConnectionStateEvent)>(std::move(__resultRef));
+      }
+    }()) : std::nullopt;
+  }
+  void JHybridEllaTerminalViewSpec::setOnConnectionStateChange(const std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>& onConnectionStateChange) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<JFunc_void_ConnectionStateEvent::javaobject> /* onConnectionStateChange */)>("setOnConnectionStateChange_cxx");
+    method(_javaPart, onConnectionStateChange.has_value() ? JFunc_void_ConnectionStateEvent_cxx::fromCpp(onConnectionStateChange.value()) : nullptr);
+  }
+  std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>> JHybridEllaTerminalViewSpec::getOnHostKeyRequest() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JFunc_void_HostKeyRequestEvent::javaobject>()>("getOnHostKeyRequest_cxx");
+    auto __result = method(_javaPart);
+    return __result != nullptr ? std::make_optional([&]() -> std::function<void(const HostKeyRequestEvent& /* event */)> {
+      if (__result->isInstanceOf(JFunc_void_HostKeyRequestEvent_cxx::javaClassStatic())) [[likely]] {
+        auto downcast = jni::static_ref_cast<JFunc_void_HostKeyRequestEvent_cxx::javaobject>(__result);
+        return downcast->cthis()->getFunction();
+      } else {
+        auto __resultRef = jni::make_global(__result);
+        return JNICallable<JFunc_void_HostKeyRequestEvent, void(HostKeyRequestEvent)>(std::move(__resultRef));
+      }
+    }()) : std::nullopt;
+  }
+  void JHybridEllaTerminalViewSpec::setOnHostKeyRequest(const std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>& onHostKeyRequest) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<JFunc_void_HostKeyRequestEvent::javaobject> /* onHostKeyRequest */)>("setOnHostKeyRequest_cxx");
+    method(_javaPart, onHostKeyRequest.has_value() ? JFunc_void_HostKeyRequestEvent_cxx::fromCpp(onHostKeyRequest.value()) : nullptr);
+  }
 
   // Methods
-  
+  void JHybridEllaTerminalViewSpec::connect(const ConnectionConfig& config) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<JConnectionConfig> /* config */)>("connect");
+    method(_javaPart, JConnectionConfig::fromCpp(config));
+  }
+  void JHybridEllaTerminalViewSpec::disconnect(const std::string& connectionId) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JString> /* connectionId */)>("disconnect");
+    method(_javaPart, jni::make_jstring(connectionId));
+  }
+  void JHybridEllaTerminalViewSpec::respondToHostKey(const std::string& connectionId, const std::string& requestId, bool accepted) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JString> /* connectionId */, jni::alias_ref<jni::JString> /* requestId */, jboolean /* accepted */)>("respondToHostKey");
+    method(_javaPart, jni::make_jstring(connectionId), jni::make_jstring(requestId), accepted);
+  }
 
 } // namespace margelo::nitro::ella::terminal

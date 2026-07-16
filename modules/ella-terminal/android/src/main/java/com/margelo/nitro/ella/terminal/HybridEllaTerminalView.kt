@@ -3,141 +3,311 @@ package com.margelo.nitro.ella.terminal
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.util.Log
-import android.view.KeyEvent
-import android.view.MotionEvent
-import android.view.inputmethod.InputMethodManager
+import android.content.Intent
+import android.net.Uri
+import android.os.Handler
+import android.os.Looper
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.sp
 import com.facebook.react.uimanager.ThemedReactContext
-import com.termux.terminal.TerminalSession
-import com.termux.terminal.TerminalSessionClient
-import com.termux.view.TerminalView
-import com.termux.view.TerminalViewClient
+import java.nio.charset.StandardCharsets
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
+import org.connectbot.terminal.Terminal
+import org.connectbot.terminal.TerminalDimensions
+import org.connectbot.terminal.TerminalEmulatorFactory
 
 class HybridEllaTerminalView(
   private val reactContext: ThemedReactContext,
-) : HybridEllaTerminalViewSpec(), TerminalSessionClient, TerminalViewClient {
-  private val terminalView = TerminalView(reactContext, null)
-  private var session: TerminalSession? = null
-  private var textSize = 14
+) : HybridEllaTerminalViewSpec() {
+  override var onConnectionStateChange: ((event: ConnectionStateEvent) -> Unit)? = null
+  override var onHostKeyRequest: ((event: HostKeyRequestEvent) -> Unit)? = null
+
+  private val viewDropped = AtomicBoolean(false)
+  private val hybridDisposed = AtomicBoolean(false)
+  private val sessionLock = Any()
+  private val mainHandler = Handler(Looper.getMainLooper())
+  private val latestDimensions = AtomicReference(TerminalDimensions(rows = 24, columns = 80))
+  private var activeConnection: EllaSshConnection? = null
+  private var pendingConnection: PendingConnection? = null
+  private val clipboard =
+    reactContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+  private val terminalEmulator = TerminalEmulatorFactory.create(
+    defaultForeground = Color(0xFFE8E8E8),
+    defaultBackground = Color(0xFF090A0C),
+    onKeyboardInput = { bytes ->
+      val copy = bytes.copyOf()
+      mainHandler.post {
+        synchronized(sessionLock) { activeConnection }?.send(copy)
+      }
+    },
+    onResize = { dimensions ->
+      mainHandler.post {
+        latestDimensions.set(dimensions)
+        synchronized(sessionLock) { activeConnection }
+          ?.resize(dimensions.columns, dimensions.rows)
+      }
+    },
+    onClipboardCopy = { text ->
+      mainHandler.post {
+        if (!viewDropped.get()) {
+          clipboard.setPrimaryClip(ClipData.newPlainText("terminal", text))
+        }
+      }
+    },
+    autoDetectUrls = true,
+  )
+  private val terminalView = ComposeView(reactContext).apply {
+    layoutParams = FrameLayout.LayoutParams(
+      ViewGroup.LayoutParams.MATCH_PARENT,
+      ViewGroup.LayoutParams.MATCH_PARENT,
+    )
+    setViewCompositionStrategy(
+      ViewCompositionStrategy.DisposeOnDetachedFromWindowOrReleasedFromPool,
+    )
+    setContent {
+      Terminal(
+        terminalEmulator = terminalEmulator,
+        modifier = Modifier.fillMaxSize(),
+        initialFontSize = 13.sp,
+        backgroundColor = Color(0xFF090A0C),
+        foregroundColor = Color(0xFFE8E8E8),
+        selectionBackgroundColor = Color(0xFF315A78),
+        selectionForegroundColor = Color.White,
+        keyboardEnabled = true,
+        showSoftKeyboard = true,
+        onHyperlinkClick = { link ->
+          mainHandler.post { openLink(link) }
+        },
+        onPasteRequest = {
+          mainHandler.post { pasteClipboard() }
+        },
+      )
+    }
+  }
+  private val outputPump = EllaTerminalOutputPump(
+    handler = mainHandler,
+    onFeed = { connection, bytes ->
+      val current = synchronized(sessionLock) { activeConnection }
+      if (!viewDropped.get() && current === connection) {
+        terminalEmulator.writeInput(bytes)
+      }
+    },
+    onOverflow = { connection -> connection.failOutputOverflow() },
+  )
 
   override val view = terminalView
 
-  init {
-    terminalView.setTerminalViewClient(this)
-    terminalView.setTextSize(textSize)
-    terminalView.isFocusable = true
-    terminalView.isFocusableInTouchMode = true
-    startLocalSession()
+  override fun connect(config: ConnectionConfig) {
+    val port = config.port.toInt()
+    if (
+      config.connectionId.isBlank() ||
+      config.host.isBlank() ||
+      config.username.isBlank() ||
+      !config.port.isFinite() ||
+      config.port != port.toDouble() ||
+      port !in 1..65535
+    ) {
+      emitInvalidConfiguration(config.connectionId)
+      return
+    }
+
+    val request = PendingConnection(
+      connectionId = config.connectionId,
+      host = config.host,
+      port = port,
+      username = config.username,
+      password = config.password.toCharArray(),
+      trustedHostKey = config.trustedHostKey,
+    )
+    synchronized(sessionLock) {
+      if (viewDropped.get()) {
+        request.clear()
+        return
+      }
+      pendingConnection?.clear()
+      pendingConnection = request
+      val current = activeConnection
+      if (current == null) {
+        startPendingConnectionLocked()
+      } else {
+        current.stop(userInitiated = false)
+      }
+    }
+  }
+
+  override fun disconnect(connectionId: String) {
+    synchronized(sessionLock) {
+      pendingConnection?.takeIf { it.connectionId == connectionId }?.let {
+        pendingConnection = null
+        it.clear()
+      }
+      activeConnection?.takeIf { it.connectionId == connectionId }
+        ?.stop(userInitiated = true)
+    }
+  }
+
+  override fun respondToHostKey(connectionId: String, requestId: String, accepted: Boolean) {
+    synchronized(sessionLock) {
+      activeConnection?.takeIf { it.connectionId == connectionId }
+        ?.respondToHostKey(requestId, accepted)
+    }
   }
 
   override fun onDropView() {
-    session?.takeIf { it.pid > 0 }?.finishIfRunning()
-    session = null
+    if (viewDropped.compareAndSet(false, true)) {
+      synchronized(sessionLock) {
+        pendingConnection?.clear()
+        pendingConnection = null
+        activeConnection?.stop(userInitiated = false)
+      }
+      outputPump.invalidate()
+      terminalView.disposeComposition()
+    }
   }
 
   override fun dispose() {
-    onDropView()
-    super.dispose()
-  }
-
-  private fun startLocalSession() {
-    val shell = "/system/bin/sh"
-    val home = reactContext.filesDir.absolutePath
-    val environment = arrayOf(
-      "HOME=$home",
-      "TMPDIR=${reactContext.cacheDir.absolutePath}",
-      "PATH=/system/bin:/system/xbin:/vendor/bin",
-      "TERM=xterm-256color",
-    )
-
-    val terminalSession = TerminalSession(
-      shell,
-      home,
-      arrayOf(shell),
-      environment,
-      2_000,
-      this,
-    )
-    session = terminalSession
-    terminalView.attachSession(terminalSession)
-  }
-
-  private fun showKeyboard() {
-    terminalView.requestFocus()
-    val input = reactContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    input.showSoftInput(terminalView, InputMethodManager.SHOW_IMPLICIT)
-  }
-
-  override fun onTextChanged(changedSession: TerminalSession) = terminalView.onScreenUpdated()
-  override fun onTitleChanged(changedSession: TerminalSession) = Unit
-  override fun onSessionFinished(finishedSession: TerminalSession) = Unit
-
-  override fun onCopyTextToClipboard(session: TerminalSession, text: String) {
-    val clipboard = reactContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    clipboard.setPrimaryClip(ClipData.newPlainText("terminal", text))
-  }
-
-  override fun onPasteTextFromClipboard(session: TerminalSession) {
-    val clipboard = reactContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    val text = clipboard.primaryClip?.getItemAt(0)?.coerceToText(reactContext)?.toString()
-    if (!text.isNullOrEmpty()) session.emulator.paste(text)
-  }
-
-  override fun onBell(session: TerminalSession) = Unit
-  override fun onColorsChanged(session: TerminalSession) = terminalView.invalidate()
-  override fun onTerminalCursorStateChange(state: Boolean) = Unit
-  override fun getTerminalCursorStyle(): Int? = null
-
-  override fun onScale(scale: Float): Float {
-    val newSize = (textSize * scale).toInt().coerceIn(10, 28)
-    if (newSize != textSize) {
-      textSize = newSize
-      terminalView.setTextSize(textSize)
+    if (hybridDisposed.compareAndSet(false, true)) {
+      onDropView()
+      super.dispose()
     }
-    return 1.0f
   }
 
-  override fun onSingleTapUp(e: MotionEvent) = showKeyboard()
-  override fun shouldBackButtonBeMappedToEscape() = false
-  override fun shouldEnforceCharBasedInput() = false
-  override fun shouldUseCtrlSpaceWorkaround() = false
-  override fun isTerminalViewSelected() = terminalView.hasFocus()
-  override fun copyModeChanged(copyMode: Boolean) = Unit
-  override fun onKeyDown(keyCode: Int, e: KeyEvent, session: TerminalSession) = false
-  override fun onKeyUp(keyCode: Int, e: KeyEvent) = false
-  override fun onLongPress(event: MotionEvent) = false
-  override fun readControlKey() = false
-  override fun readAltKey() = false
-  override fun readShiftKey() = false
-  override fun readFnKey() = false
-  override fun onCodePoint(codePoint: Int, ctrlDown: Boolean, session: TerminalSession) = false
-  override fun onEmulatorSet() = Unit
-
-  override fun logError(tag: String, message: String) {
-    Log.e(tag, message)
+  private fun startPendingConnectionLocked() {
+    val request = pendingConnection ?: return
+    pendingConnection = null
+    outputPump.reset()
+    val connection = EllaSshConnection(
+      connectionId = request.connectionId,
+      host = request.host,
+      port = request.port,
+      username = request.username,
+      password = request.takePassword(),
+      trustedHostKey = request.trustedHostKey,
+      initialSize = latestDimensions.get(),
+      onState = ::handleState,
+      onHostKey = ::handleHostKey,
+      onOutput = ::handleOutput,
+      onStopped = ::handleStopped,
+    )
+    activeConnection = connection
+    connection.start()
   }
 
-  override fun logWarn(tag: String, message: String) {
-    Log.w(tag, message)
+  private fun handleState(
+    connection: EllaSshConnection,
+    state: ConnectionState,
+    errorCode: TerminalErrorCode?,
+    message: String?,
+  ) {
+    mainHandler.post {
+      val current = synchronized(sessionLock) { activeConnection }
+      if (!viewDropped.get() && current === connection) {
+        onConnectionStateChange?.invoke(
+          ConnectionStateEvent(connection.connectionId, state, errorCode, message),
+        )
+      }
+    }
   }
 
-  override fun logInfo(tag: String, message: String) {
-    Log.i(tag, message)
+  private fun handleHostKey(
+    connection: EllaSshConnection,
+    requestId: String,
+    algorithm: String,
+    fingerprint: String,
+  ) {
+    mainHandler.post {
+      val current = synchronized(sessionLock) { activeConnection }
+      if (!viewDropped.get() && current === connection) {
+        onHostKeyRequest?.invoke(
+          HostKeyRequestEvent(
+            connectionId = connection.connectionId,
+            requestId = requestId,
+            host = connection.host,
+            port = connection.port.toDouble(),
+            algorithm = algorithm,
+            fingerprint = fingerprint,
+          ),
+        )
+      }
+    }
   }
 
-  override fun logDebug(tag: String, message: String) {
-    Log.d(tag, message)
+  private fun handleOutput(connection: EllaSshConnection, bytes: ByteArray) {
+    outputPump.enqueue(connection, bytes)
   }
 
-  override fun logVerbose(tag: String, message: String) {
-    Log.v(tag, message)
+  private fun handleStopped(connection: EllaSshConnection) {
+    mainHandler.post {
+      synchronized(sessionLock) {
+        if (activeConnection !== connection) return@post
+        activeConnection = null
+        if (viewDropped.get()) {
+          pendingConnection?.clear()
+          pendingConnection = null
+        } else {
+          startPendingConnectionLocked()
+        }
+      }
+    }
   }
 
-  override fun logStackTraceWithMessage(tag: String, message: String, e: Exception) {
-    Log.e(tag, message, e)
+  private fun emitInvalidConfiguration(connectionId: String) {
+    mainHandler.post {
+      if (!viewDropped.get()) {
+        onConnectionStateChange?.invoke(
+          ConnectionStateEvent(
+            connectionId = connectionId,
+            state = ConnectionState.ERROR,
+            errorCode = TerminalErrorCode.INTERNALERROR,
+            message = "Invalid SSH connection configuration.",
+          ),
+        )
+      }
+    }
   }
 
-  override fun logStackTrace(tag: String, e: Exception) {
-    Log.e(tag, "Terminal error", e)
+  private fun pasteClipboard() {
+    if (viewDropped.get()) return
+    val text = clipboard.primaryClip
+      ?.takeIf { it.itemCount > 0 }
+      ?.getItemAt(0)
+      ?.coerceToText(reactContext)
+      ?.toString()
+      ?: return
+    if (text.isEmpty()) return
+    synchronized(sessionLock) { activeConnection }
+      ?.send(text.toByteArray(StandardCharsets.UTF_8))
+  }
+
+  private fun openLink(link: String) {
+    val uri = Uri.parse(link)
+    if (uri.scheme?.lowercase() !in setOf("http", "https")) return
+    val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+      addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    runCatching { reactContext.startActivity(intent) }
+  }
+}
+
+private class PendingConnection(
+  val connectionId: String,
+  val host: String,
+  val port: Int,
+  val username: String,
+  private var password: CharArray?,
+  val trustedHostKey: TrustedHostKey?,
+) {
+  fun takePassword(): CharArray = password.also { password = null } ?: CharArray(0)
+
+  fun clear() {
+    password?.fill('\u0000')
+    password = null
   }
 }

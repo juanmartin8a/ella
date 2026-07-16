@@ -9,10 +9,31 @@
     "userInterfaceStyle": "dark",
     "plugins": [
       "expo-dev-client",
-      "./modules/ella-terminal/app.plugin.js"
+      "./modules/ella-terminal/app.plugin.js",
+      "expo-router",
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": true
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 24,
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "buildToolsVersion": "36.0.0",
+            "kotlinVersion": "2.3.21"
+          }
+        }
+      ],
+      "expo-status-bar"
     ],
     "ios": {
       "supportsTablet": true,
+      "deploymentTarget": "16.4",
       "bundleIdentifier": "com.juanmartin8a.ella",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false

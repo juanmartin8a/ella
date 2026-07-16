@@ -12,9 +12,28 @@
 // Forward declaration of `HybridEllaTerminalViewSpec_cxx` to properly resolve imports.
 namespace EllaTerminal { class HybridEllaTerminalViewSpec_cxx; }
 
+// Forward declaration of `ConnectionStateEvent` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct ConnectionStateEvent; }
+// Forward declaration of `ConnectionState` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { enum class ConnectionState; }
+// Forward declaration of `TerminalErrorCode` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { enum class TerminalErrorCode; }
+// Forward declaration of `HostKeyRequestEvent` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct HostKeyRequestEvent; }
+// Forward declaration of `ConnectionConfig` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct ConnectionConfig; }
+// Forward declaration of `TrustedHostKey` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct TrustedHostKey; }
 
-
-
+#include "ConnectionStateEvent.hpp"
+#include <functional>
+#include <optional>
+#include <string>
+#include "ConnectionState.hpp"
+#include "TerminalErrorCode.hpp"
+#include "HostKeyRequestEvent.hpp"
+#include "ConnectionConfig.hpp"
+#include "TrustedHostKey.hpp"
 
 #include "EllaTerminal-Swift-Cxx-Umbrella.hpp"
 
@@ -62,11 +81,41 @@ namespace margelo::nitro::ella::terminal {
 
   public:
     // Properties
-    
+    inline std::optional<std::function<void(const ConnectionStateEvent& /* event */)>> getOnConnectionStateChange() noexcept override {
+      auto __result = _swiftPart.getOnConnectionStateChange();
+      return __result;
+    }
+    inline void setOnConnectionStateChange(const std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>& onConnectionStateChange) noexcept override {
+      _swiftPart.setOnConnectionStateChange(onConnectionStateChange);
+    }
+    inline std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>> getOnHostKeyRequest() noexcept override {
+      auto __result = _swiftPart.getOnHostKeyRequest();
+      return __result;
+    }
+    inline void setOnHostKeyRequest(const std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>& onHostKeyRequest) noexcept override {
+      _swiftPart.setOnHostKeyRequest(onHostKeyRequest);
+    }
 
   public:
     // Methods
-    
+    inline void connect(const ConnectionConfig& config) override {
+      auto __result = _swiftPart.connect(std::forward<decltype(config)>(config));
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+    }
+    inline void disconnect(const std::string& connectionId) override {
+      auto __result = _swiftPart.disconnect(connectionId);
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+    }
+    inline void respondToHostKey(const std::string& connectionId, const std::string& requestId, bool accepted) override {
+      auto __result = _swiftPart.respondToHostKey(connectionId, requestId, std::forward<decltype(accepted)>(accepted));
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+    }
 
   private:
     EllaTerminal::HybridEllaTerminalViewSpec_cxx _swiftPart;

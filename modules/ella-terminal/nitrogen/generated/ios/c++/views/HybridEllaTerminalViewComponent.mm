@@ -79,7 +79,16 @@ using namespace margelo::nitro::ella::terminal::views;
   // 2. Update each prop individually
   swiftPart.beforeUpdate();
 
-  
+  // onConnectionStateChange: optional
+  if (newViewProps.onConnectionStateChange.isDirty) {
+    swiftPart.setOnConnectionStateChange(newViewProps.onConnectionStateChange.value);
+    newViewProps.onConnectionStateChange.isDirty = false;
+  }
+  // onHostKeyRequest: optional
+  if (newViewProps.onHostKeyRequest.isDirty) {
+    swiftPart.setOnHostKeyRequest(newViewProps.onHostKeyRequest.value);
+    newViewProps.onHostKeyRequest.isDirty = false;
+  }
 
   swiftPart.afterUpdate();
 

@@ -37,7 +37,14 @@ void JHybridEllaTerminalViewStateUpdater::updateViewProps(jni::alias_ref<jni::JC
   }
 
   // Update all props if they are dirty
-  
+  if (props->onConnectionStateChange.isDirty) {
+    hybridView->setOnConnectionStateChange(props->onConnectionStateChange.value);
+    props->onConnectionStateChange.isDirty = false;
+  }
+  if (props->onHostKeyRequest.isDirty) {
+    hybridView->setOnHostKeyRequest(props->onHostKeyRequest.value);
+    props->onHostKeyRequest.isDirty = false;
+  }
 
   // Update hybridRef if it changed
   if (props->hybridRef.isDirty) {

@@ -121,9 +121,104 @@ open class HybridEllaTerminalViewSpec_cxx {
   }
 
   // Properties
+  public final var onConnectionStateChange: bridge.std__optional_std__function_void_const_ConnectionStateEvent_____event______ {
+    @inline(__always)
+    get {
+      return { () -> bridge.std__optional_std__function_void_const_ConnectionStateEvent_____event______ in
+        if let __unwrappedValue = self.__implementation.onConnectionStateChange {
+          return bridge.create_std__optional_std__function_void_const_ConnectionStateEvent_____event______({ () -> bridge.Func_void_ConnectionStateEvent in
+            let __closureWrapper = Func_void_ConnectionStateEvent(__unwrappedValue)
+            return bridge.create_Func_void_ConnectionStateEvent(__closureWrapper.toUnsafe())
+          }())
+        } else {
+          return .init()
+        }
+      }()
+    }
+    @inline(__always)
+    set {
+      self.__implementation.onConnectionStateChange = { () -> ((_ event: ConnectionStateEvent) -> Void)? in
+        if bridge.has_value_std__optional_std__function_void_const_ConnectionStateEvent_____event______(newValue) {
+          let __unwrapped = bridge.get_std__optional_std__function_void_const_ConnectionStateEvent_____event______(newValue)
+          return { () -> (ConnectionStateEvent) -> Void in
+            let __wrappedFunction = bridge.wrap_Func_void_ConnectionStateEvent(__unwrapped)
+            return { (__event: ConnectionStateEvent) -> Void in
+              __wrappedFunction.call(__event)
+            }
+          }()
+        } else {
+          return nil
+        }
+      }()
+    }
+  }
   
+  public final var onHostKeyRequest: bridge.std__optional_std__function_void_const_HostKeyRequestEvent_____event______ {
+    @inline(__always)
+    get {
+      return { () -> bridge.std__optional_std__function_void_const_HostKeyRequestEvent_____event______ in
+        if let __unwrappedValue = self.__implementation.onHostKeyRequest {
+          return bridge.create_std__optional_std__function_void_const_HostKeyRequestEvent_____event______({ () -> bridge.Func_void_HostKeyRequestEvent in
+            let __closureWrapper = Func_void_HostKeyRequestEvent(__unwrappedValue)
+            return bridge.create_Func_void_HostKeyRequestEvent(__closureWrapper.toUnsafe())
+          }())
+        } else {
+          return .init()
+        }
+      }()
+    }
+    @inline(__always)
+    set {
+      self.__implementation.onHostKeyRequest = { () -> ((_ event: HostKeyRequestEvent) -> Void)? in
+        if bridge.has_value_std__optional_std__function_void_const_HostKeyRequestEvent_____event______(newValue) {
+          let __unwrapped = bridge.get_std__optional_std__function_void_const_HostKeyRequestEvent_____event______(newValue)
+          return { () -> (HostKeyRequestEvent) -> Void in
+            let __wrappedFunction = bridge.wrap_Func_void_HostKeyRequestEvent(__unwrapped)
+            return { (__event: HostKeyRequestEvent) -> Void in
+              __wrappedFunction.call(__event)
+            }
+          }()
+        } else {
+          return nil
+        }
+      }()
+    }
+  }
 
   // Methods
+  @inline(__always)
+  public final func connect(config: ConnectionConfig) -> bridge.Result_void_ {
+    do {
+      try self.__implementation.connect(config: config)
+      return bridge.create_Result_void_()
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_void_(__exceptionPtr)
+    }
+  }
+  
+  @inline(__always)
+  public final func disconnect(connectionId: std.string) -> bridge.Result_void_ {
+    do {
+      try self.__implementation.disconnect(connectionId: String(connectionId))
+      return bridge.create_Result_void_()
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_void_(__exceptionPtr)
+    }
+  }
+  
+  @inline(__always)
+  public final func respondToHostKey(connectionId: std.string, requestId: std.string, accepted: Bool) -> bridge.Result_void_ {
+    do {
+      try self.__implementation.respondToHostKey(connectionId: String(connectionId), requestId: String(requestId), accepted: accepted)
+      return bridge.create_Result_void_()
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_void_(__exceptionPtr)
+    }
+  }
+  
   public final func getView() -> UnsafeMutableRawPointer {
     return Unmanaged.passRetained(__implementation.view).toOpaque()
   }

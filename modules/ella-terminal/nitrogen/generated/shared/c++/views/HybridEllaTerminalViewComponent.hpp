@@ -16,10 +16,12 @@
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/renderer/components/view/ViewProps.h>
 
-#include <memory>
-#include "HybridEllaTerminalViewSpec.hpp"
+#include "ConnectionStateEvent.hpp"
 #include <functional>
 #include <optional>
+#include "HostKeyRequestEvent.hpp"
+#include <memory>
+#include "HybridEllaTerminalViewSpec.hpp"
 
 namespace margelo::nitro::ella::terminal::views {
 
@@ -41,6 +43,8 @@ namespace margelo::nitro::ella::terminal::views {
                                 const react::RawProps& rawProps);
 
   public:
+    CachedProp<std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>> onConnectionStateChange;
+    CachedProp<std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>> onHostKeyRequest;
     CachedProp<std::optional<std::function<void(const std::shared_ptr<HybridEllaTerminalViewSpec>& /* ref */)>>> hybridRef;
 
   private:

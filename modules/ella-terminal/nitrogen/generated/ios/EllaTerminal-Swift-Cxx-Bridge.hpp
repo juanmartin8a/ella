@@ -8,16 +8,36 @@
 #pragma once
 
 // Forward declarations of C++ defined types
+// Forward declaration of `ConnectionStateEvent` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct ConnectionStateEvent; }
+// Forward declaration of `ConnectionState` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { enum class ConnectionState; }
+// Forward declaration of `HostKeyRequestEvent` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct HostKeyRequestEvent; }
 // Forward declaration of `HybridEllaTerminalViewSpec` to properly resolve imports.
 namespace margelo::nitro::ella::terminal { class HybridEllaTerminalViewSpec; }
+// Forward declaration of `TerminalErrorCode` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { enum class TerminalErrorCode; }
+// Forward declaration of `TrustedHostKey` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct TrustedHostKey; }
 
 // Forward declarations of Swift defined types
 // Forward declaration of `HybridEllaTerminalViewSpec_cxx` to properly resolve imports.
 namespace EllaTerminal { class HybridEllaTerminalViewSpec_cxx; }
 
 // Include C++ defined types
+#include "ConnectionState.hpp"
+#include "ConnectionStateEvent.hpp"
+#include "HostKeyRequestEvent.hpp"
 #include "HybridEllaTerminalViewSpec.hpp"
+#include "TerminalErrorCode.hpp"
+#include "TrustedHostKey.hpp"
+#include <NitroModules/Result.hpp>
+#include <exception>
+#include <functional>
 #include <memory>
+#include <optional>
+#include <string>
 
 /**
  * Contains specialized versions of C++ templated types so they can be accessed from Swift,
@@ -25,6 +45,125 @@ namespace EllaTerminal { class HybridEllaTerminalViewSpec_cxx; }
  */
 namespace margelo::nitro::ella::terminal::bridge::swift {
 
+  // pragma MARK: std::optional<TerminalErrorCode>
+  /**
+   * Specialized version of `std::optional<TerminalErrorCode>`.
+   */
+  using std__optional_TerminalErrorCode_ = std::optional<TerminalErrorCode>;
+  inline std::optional<TerminalErrorCode> create_std__optional_TerminalErrorCode_(const TerminalErrorCode& value) noexcept {
+    return std::optional<TerminalErrorCode>(value);
+  }
+  inline bool has_value_std__optional_TerminalErrorCode_(const std::optional<TerminalErrorCode>& optional) noexcept {
+    return optional.has_value();
+  }
+  inline TerminalErrorCode get_std__optional_TerminalErrorCode_(const std::optional<TerminalErrorCode>& optional) noexcept {
+    return optional.value();
+  }
+  
+  // pragma MARK: std::optional<std::string>
+  /**
+   * Specialized version of `std::optional<std::string>`.
+   */
+  using std__optional_std__string_ = std::optional<std::string>;
+  inline std::optional<std::string> create_std__optional_std__string_(const std::string& value) noexcept {
+    return std::optional<std::string>(value);
+  }
+  inline bool has_value_std__optional_std__string_(const std::optional<std::string>& optional) noexcept {
+    return optional.has_value();
+  }
+  inline std::string get_std__optional_std__string_(const std::optional<std::string>& optional) noexcept {
+    return optional.value();
+  }
+  
+  // pragma MARK: std::function<void(const ConnectionStateEvent& /* event */)>
+  /**
+   * Specialized version of `std::function<void(const ConnectionStateEvent&)>`.
+   */
+  using Func_void_ConnectionStateEvent = std::function<void(const ConnectionStateEvent& /* event */)>;
+  /**
+   * Wrapper class for a `std::function<void(const ConnectionStateEvent& / * event * /)>`, this can be used from Swift.
+   */
+  class Func_void_ConnectionStateEvent_Wrapper final {
+  public:
+    explicit Func_void_ConnectionStateEvent_Wrapper(std::function<void(const ConnectionStateEvent& /* event */)>&& func): _function(std::make_unique<std::function<void(const ConnectionStateEvent& /* event */)>>(std::move(func))) {}
+    inline void call(ConnectionStateEvent event) const noexcept {
+      _function->operator()(event);
+    }
+  private:
+    std::unique_ptr<std::function<void(const ConnectionStateEvent& /* event */)>> _function;
+  } SWIFT_NONCOPYABLE;
+  Func_void_ConnectionStateEvent create_Func_void_ConnectionStateEvent(void* NON_NULL swiftClosureWrapper) noexcept;
+  inline Func_void_ConnectionStateEvent_Wrapper wrap_Func_void_ConnectionStateEvent(Func_void_ConnectionStateEvent value) noexcept {
+    return Func_void_ConnectionStateEvent_Wrapper(std::move(value));
+  }
+  
+  // pragma MARK: std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>
+  /**
+   * Specialized version of `std::optional<std::function<void(const ConnectionStateEvent& / * event * /)>>`.
+   */
+  using std__optional_std__function_void_const_ConnectionStateEvent_____event______ = std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>;
+  inline std::optional<std::function<void(const ConnectionStateEvent& /* event */)>> create_std__optional_std__function_void_const_ConnectionStateEvent_____event______(const std::function<void(const ConnectionStateEvent& /* event */)>& value) noexcept {
+    return std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>(value);
+  }
+  inline bool has_value_std__optional_std__function_void_const_ConnectionStateEvent_____event______(const std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>& optional) noexcept {
+    return optional.has_value();
+  }
+  inline std::function<void(const ConnectionStateEvent& /* event */)> get_std__optional_std__function_void_const_ConnectionStateEvent_____event______(const std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>& optional) noexcept {
+    return optional.value();
+  }
+  
+  // pragma MARK: std::function<void(const HostKeyRequestEvent& /* event */)>
+  /**
+   * Specialized version of `std::function<void(const HostKeyRequestEvent&)>`.
+   */
+  using Func_void_HostKeyRequestEvent = std::function<void(const HostKeyRequestEvent& /* event */)>;
+  /**
+   * Wrapper class for a `std::function<void(const HostKeyRequestEvent& / * event * /)>`, this can be used from Swift.
+   */
+  class Func_void_HostKeyRequestEvent_Wrapper final {
+  public:
+    explicit Func_void_HostKeyRequestEvent_Wrapper(std::function<void(const HostKeyRequestEvent& /* event */)>&& func): _function(std::make_unique<std::function<void(const HostKeyRequestEvent& /* event */)>>(std::move(func))) {}
+    inline void call(HostKeyRequestEvent event) const noexcept {
+      _function->operator()(event);
+    }
+  private:
+    std::unique_ptr<std::function<void(const HostKeyRequestEvent& /* event */)>> _function;
+  } SWIFT_NONCOPYABLE;
+  Func_void_HostKeyRequestEvent create_Func_void_HostKeyRequestEvent(void* NON_NULL swiftClosureWrapper) noexcept;
+  inline Func_void_HostKeyRequestEvent_Wrapper wrap_Func_void_HostKeyRequestEvent(Func_void_HostKeyRequestEvent value) noexcept {
+    return Func_void_HostKeyRequestEvent_Wrapper(std::move(value));
+  }
+  
+  // pragma MARK: std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>
+  /**
+   * Specialized version of `std::optional<std::function<void(const HostKeyRequestEvent& / * event * /)>>`.
+   */
+  using std__optional_std__function_void_const_HostKeyRequestEvent_____event______ = std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>;
+  inline std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>> create_std__optional_std__function_void_const_HostKeyRequestEvent_____event______(const std::function<void(const HostKeyRequestEvent& /* event */)>& value) noexcept {
+    return std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>(value);
+  }
+  inline bool has_value_std__optional_std__function_void_const_HostKeyRequestEvent_____event______(const std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>& optional) noexcept {
+    return optional.has_value();
+  }
+  inline std::function<void(const HostKeyRequestEvent& /* event */)> get_std__optional_std__function_void_const_HostKeyRequestEvent_____event______(const std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>& optional) noexcept {
+    return optional.value();
+  }
+  
+  // pragma MARK: std::optional<TrustedHostKey>
+  /**
+   * Specialized version of `std::optional<TrustedHostKey>`.
+   */
+  using std__optional_TrustedHostKey_ = std::optional<TrustedHostKey>;
+  inline std::optional<TrustedHostKey> create_std__optional_TrustedHostKey_(const TrustedHostKey& value) noexcept {
+    return std::optional<TrustedHostKey>(value);
+  }
+  inline bool has_value_std__optional_TrustedHostKey_(const std::optional<TrustedHostKey>& optional) noexcept {
+    return optional.has_value();
+  }
+  inline TrustedHostKey get_std__optional_TrustedHostKey_(const std::optional<TrustedHostKey>& optional) noexcept {
+    return optional.value();
+  }
+  
   // pragma MARK: std::shared_ptr<HybridEllaTerminalViewSpec>
   /**
    * Specialized version of `std::shared_ptr<HybridEllaTerminalViewSpec>`.
@@ -36,5 +175,14 @@ namespace margelo::nitro::ella::terminal::bridge::swift {
   // pragma MARK: std::weak_ptr<HybridEllaTerminalViewSpec>
   using std__weak_ptr_HybridEllaTerminalViewSpec_ = std::weak_ptr<HybridEllaTerminalViewSpec>;
   inline std__weak_ptr_HybridEllaTerminalViewSpec_ weakify_std__shared_ptr_HybridEllaTerminalViewSpec_(const std::shared_ptr<HybridEllaTerminalViewSpec>& strong) noexcept { return strong; }
+  
+  // pragma MARK: Result<void>
+  using Result_void_ = Result<void>;
+  inline Result_void_ create_Result_void_() noexcept {
+    return Result<void>::withValue();
+  }
+  inline Result_void_ create_Result_void_(const std::exception_ptr& error) noexcept {
+    return Result<void>::withError(error);
+  }
 
 } // namespace margelo::nitro::ella::terminal::bridge::swift

@@ -13,9 +13,19 @@
 #error NitroModules cannot be found! Are you sure you installed NitroModules properly?
 #endif
 
+// Forward declaration of `ConnectionStateEvent` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct ConnectionStateEvent; }
+// Forward declaration of `HostKeyRequestEvent` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct HostKeyRequestEvent; }
+// Forward declaration of `ConnectionConfig` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { struct ConnectionConfig; }
 
-
-
+#include "ConnectionStateEvent.hpp"
+#include <functional>
+#include <optional>
+#include "HostKeyRequestEvent.hpp"
+#include "ConnectionConfig.hpp"
+#include <string>
 
 namespace margelo::nitro::ella::terminal {
 
@@ -44,11 +54,16 @@ namespace margelo::nitro::ella::terminal {
 
     public:
       // Properties
-      
+      virtual std::optional<std::function<void(const ConnectionStateEvent& /* event */)>> getOnConnectionStateChange() = 0;
+      virtual void setOnConnectionStateChange(const std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>& onConnectionStateChange) = 0;
+      virtual std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>> getOnHostKeyRequest() = 0;
+      virtual void setOnHostKeyRequest(const std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>& onHostKeyRequest) = 0;
 
     public:
       // Methods
-      
+      virtual void connect(const ConnectionConfig& config) = 0;
+      virtual void disconnect(const std::string& connectionId) = 0;
+      virtual void respondToHostKey(const std::string& connectionId, const std::string& requestId, bool accepted) = 0;
 
     protected:
       // Hybrid Setup

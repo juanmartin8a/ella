@@ -10,10 +10,13 @@ import NitroModules
 /// See ``HybridEllaTerminalViewSpec``
 public protocol HybridEllaTerminalViewSpec_protocol: HybridObject, HybridView {
   // Properties
-  
+  var onConnectionStateChange: ((_ event: ConnectionStateEvent) -> Void)? { get set }
+  var onHostKeyRequest: ((_ event: HostKeyRequestEvent) -> Void)? { get set }
 
   // Methods
-  
+  func connect(config: ConnectionConfig) throws -> Void
+  func disconnect(connectionId: String) throws -> Void
+  func respondToHostKey(connectionId: String, requestId: String, accepted: Bool) throws -> Void
 }
 
 public extension HybridEllaTerminalViewSpec_protocol {

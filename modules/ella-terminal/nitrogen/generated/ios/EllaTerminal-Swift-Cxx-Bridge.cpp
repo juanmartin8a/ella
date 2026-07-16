@@ -14,6 +14,22 @@
 
 namespace margelo::nitro::ella::terminal::bridge::swift {
 
+  // pragma MARK: std::function<void(const ConnectionStateEvent& /* event */)>
+  Func_void_ConnectionStateEvent create_Func_void_ConnectionStateEvent(void* NON_NULL swiftClosureWrapper) noexcept {
+    auto swiftClosure = EllaTerminal::Func_void_ConnectionStateEvent::fromUnsafe(swiftClosureWrapper);
+    return [swiftClosure = std::move(swiftClosure)](const ConnectionStateEvent& event) mutable -> void {
+      swiftClosure.call(event);
+    };
+  }
+  
+  // pragma MARK: std::function<void(const HostKeyRequestEvent& /* event */)>
+  Func_void_HostKeyRequestEvent create_Func_void_HostKeyRequestEvent(void* NON_NULL swiftClosureWrapper) noexcept {
+    auto swiftClosure = EllaTerminal::Func_void_HostKeyRequestEvent::fromUnsafe(swiftClosureWrapper);
+    return [swiftClosure = std::move(swiftClosure)](const HostKeyRequestEvent& event) mutable -> void {
+      swiftClosure.call(event);
+    };
+  }
+  
   // pragma MARK: std::shared_ptr<HybridEllaTerminalViewSpec>
   std::shared_ptr<HybridEllaTerminalViewSpec> create_std__shared_ptr_HybridEllaTerminalViewSpec_(void* NON_NULL swiftUnsafePointer) noexcept {
     EllaTerminal::HybridEllaTerminalViewSpec_cxx swiftPart = EllaTerminal::HybridEllaTerminalViewSpec_cxx::fromUnsafe(swiftUnsafePointer);

@@ -26,6 +26,26 @@ namespace margelo::nitro::ella::terminal::views {
                                                            const HybridEllaTerminalViewProps& sourceProps,
                                                            const react::RawProps& rawProps):
     react::ViewProps(context, sourceProps, rawProps, filterObjectKeys),
+    onConnectionStateChange([&]() -> CachedProp<std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>> {
+      try {
+        const react::RawValue* rawValue = rawProps.at("onConnectionStateChange", nullptr, nullptr);
+        if (rawValue == nullptr) return sourceProps.onConnectionStateChange;
+        const auto& [runtime, value] = (std::pair<jsi::Runtime*, jsi::Value>)*rawValue;
+        return CachedProp<std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>>::fromRawValue(*runtime, value.asObject(*runtime).getProperty(*runtime, PropNameIDCache::get(*runtime, "f")), sourceProps.onConnectionStateChange);
+      } catch (const std::exception& exc) {
+        throw std::runtime_error(std::string("EllaTerminalView.onConnectionStateChange: ") + exc.what());
+      }
+    }()),
+    onHostKeyRequest([&]() -> CachedProp<std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>> {
+      try {
+        const react::RawValue* rawValue = rawProps.at("onHostKeyRequest", nullptr, nullptr);
+        if (rawValue == nullptr) return sourceProps.onHostKeyRequest;
+        const auto& [runtime, value] = (std::pair<jsi::Runtime*, jsi::Value>)*rawValue;
+        return CachedProp<std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>>::fromRawValue(*runtime, value.asObject(*runtime).getProperty(*runtime, PropNameIDCache::get(*runtime, "f")), sourceProps.onHostKeyRequest);
+      } catch (const std::exception& exc) {
+        throw std::runtime_error(std::string("EllaTerminalView.onHostKeyRequest: ") + exc.what());
+      }
+    }()),
     hybridRef([&]() -> CachedProp<std::optional<std::function<void(const std::shared_ptr<HybridEllaTerminalViewSpec>& /* ref */)>>> {
       try {
         const react::RawValue* rawValue = rawProps.at("hybridRef", nullptr, nullptr);
@@ -39,6 +59,8 @@ namespace margelo::nitro::ella::terminal::views {
 
   bool HybridEllaTerminalViewProps::filterObjectKeys(const std::string& propName) {
     switch (hashString(propName)) {
+      case hashString("onConnectionStateChange"): return true;
+      case hashString("onHostKeyRequest"): return true;
       case hashString("hybridRef"): return true;
       default: return false;
     }

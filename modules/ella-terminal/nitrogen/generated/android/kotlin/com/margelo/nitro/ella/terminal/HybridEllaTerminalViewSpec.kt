@@ -26,10 +26,46 @@ import com.margelo.nitro.views.HybridView
 )
 abstract class HybridEllaTerminalViewSpec: HybridView() {
   // Properties
+  abstract var onConnectionStateChange: ((event: ConnectionStateEvent) -> Unit)?
   
+  private var onConnectionStateChange_cxx: Func_void_ConnectionStateEvent?
+    @Keep
+    @DoNotStrip
+    get() {
+      return onConnectionStateChange?.let { Func_void_ConnectionStateEvent_java(it) }
+    }
+    @Keep
+    @DoNotStrip
+    set(value) {
+      onConnectionStateChange = value?.let { it }
+    }
+  
+  abstract var onHostKeyRequest: ((event: HostKeyRequestEvent) -> Unit)?
+  
+  private var onHostKeyRequest_cxx: Func_void_HostKeyRequestEvent?
+    @Keep
+    @DoNotStrip
+    get() {
+      return onHostKeyRequest?.let { Func_void_HostKeyRequestEvent_java(it) }
+    }
+    @Keep
+    @DoNotStrip
+    set(value) {
+      onHostKeyRequest = value?.let { it }
+    }
 
   // Methods
+  @DoNotStrip
+  @Keep
+  abstract fun connect(config: ConnectionConfig): Unit
   
+  @DoNotStrip
+  @Keep
+  abstract fun disconnect(connectionId: String): Unit
+  
+  @DoNotStrip
+  @Keep
+  abstract fun respondToHostKey(connectionId: String, requestId: String, accepted: Boolean): Unit
 
   // Default implementation of `HybridObject.toString()`
   override fun toString(): String {

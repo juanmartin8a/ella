@@ -24,5 +24,8 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi"
   s.dependency "React-callinvoker"
   s.dependency "SwiftTerm"
+  s.spm_dependency "swift-nio-ssh/NIOSSH"
+  s.spm_dependency "swift-nio/NIOCore"
+  s.spm_dependency "swift-nio/NIOPosix"
   install_modules_dependencies(s)
 end
