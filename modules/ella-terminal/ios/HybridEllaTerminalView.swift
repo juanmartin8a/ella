@@ -4,6 +4,7 @@ import UIKit
 
 final class HybridEllaTerminalView: HybridEllaTerminalViewSpec, TerminalViewDelegate {
   private let terminalView = EllaSwiftTermView(frame: .zero)
+  private let containerView = KeyboardAvoidingTerminalContainer()
   private var session: EllaSSHSession?
   private var sessionToken: UUID?
   private var pendingConnection: EllaSSHConnectionConfiguration?
@@ -12,7 +13,7 @@ final class HybridEllaTerminalView: HybridEllaTerminalViewSpec, TerminalViewDele
   var onConnectionStateChange: ((ConnectionStateEvent) -> Void)?
   var onHostKeyRequest: ((HostKeyRequestEvent) -> Void)?
 
-  var view: UIView { terminalView }
+  var view: UIView { containerView }
 
   override init() {
     super.init()
@@ -21,6 +22,7 @@ final class HybridEllaTerminalView: HybridEllaTerminalViewSpec, TerminalViewDele
     terminalView.nativeBackgroundColor = .black
     terminalView.nativeForegroundColor = .white
     terminalView.font = .monospacedSystemFont(ofSize: 13, weight: .regular)
+    containerView.install(terminalView)
     terminalView.onFirstLayout = { [weak terminalView] in
       _ = terminalView?.becomeFirstResponder()
     }
@@ -205,5 +207,18 @@ private final class EllaSwiftTermView: TerminalView {
     guard !bounds.isEmpty, let onFirstLayout else { return }
     self.onFirstLayout = nil
     onFirstLayout()
+  }
+}
+
+private final class KeyboardAvoidingTerminalContainer: UIView {
+  func install(_ terminalView: UIView) {
+    terminalView.translatesAutoresizingMaskIntoConstraints = false
+    addSubview(terminalView)
+    NSLayoutConstraint.activate([
+      terminalView.topAnchor.constraint(equalTo: topAnchor),
+      terminalView.leadingAnchor.constraint(equalTo: leadingAnchor),
+      terminalView.trailingAnchor.constraint(equalTo: trailingAnchor),
+      terminalView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
+    ])
   }
 }

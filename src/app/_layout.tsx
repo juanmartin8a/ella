@@ -15,7 +15,12 @@ export default function RootLayout() {
           <Stack.Screen name="index" options={{ title: 'Ella' }} />
           <Stack.Screen
             name="connect"
-            options={{ presentation: 'modal', title: 'Connect' }}
+            options={{
+              presentation: 'modal',
+              title: 'Connect',
+              headerTransparent: true,
+              headerShadowVisible: true,
+            }}
           />
         </Stack>
         <StatusBar style="light" />

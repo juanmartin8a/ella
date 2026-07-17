@@ -39,6 +39,7 @@ interface ConnectionDefaults extends ConnectionForm {
 
 interface ConnectionControllerValue {
   state: ConnectionState
+  connectionHost: string | null
   viewReady: boolean
   hybridRef: (ref: EllaTerminalView) => void
   onConnectionStateChange: (event: ConnectionStateEvent) => void
@@ -78,6 +79,7 @@ export function ConnectionControllerProvider({ children }: PropsWithChildren) {
   const hostKeyRequestRef = useRef<string | null>(null)
   const hostKeyWriteQueueRef = useRef<Promise<void>>(Promise.resolve())
   const [state, setState] = useState<ConnectionState>('idle')
+  const [connectionHost, setConnectionHost] = useState<string | null>(null)
   const [viewReady, setViewReady] = useState(false)
 
   const enqueueHostKeyOperation = useCallback(
@@ -104,6 +106,7 @@ export function ConnectionControllerProvider({ children }: PropsWithChildren) {
     if (event.state === 'error') {
       hostKeyRequestRef.current = null
       connectionIdRef.current = null
+      setConnectionHost(null)
       const message = event.errorCode
         ? errorMessages[event.errorCode]
         : errorMessages.internalError
@@ -111,6 +114,7 @@ export function ConnectionControllerProvider({ children }: PropsWithChildren) {
     } else if (event.state === 'disconnected') {
       hostKeyRequestRef.current = null
       connectionIdRef.current = null
+      setConnectionHost(null)
     }
   }, [])
 
@@ -197,6 +201,7 @@ export function ConnectionControllerProvider({ children }: PropsWithChildren) {
     const connectionId = nextConnectionId()
     connectionIdRef.current = connectionId
     hostKeyRequestRef.current = null
+    setConnectionHost(fields.host)
     setState('connecting')
 
     try {
@@ -208,6 +213,7 @@ export function ConnectionControllerProvider({ children }: PropsWithChildren) {
       })
     } catch {
       connectionIdRef.current = null
+      setConnectionHost(null)
       setState('error')
       throw new Error(errorMessages.internalError)
     }
@@ -258,6 +264,7 @@ export function ConnectionControllerProvider({ children }: PropsWithChildren) {
     <ConnectionControllerContext.Provider
       value={{
         state,
+        connectionHost,
         viewReady,
         hybridRef,
         onConnectionStateChange,

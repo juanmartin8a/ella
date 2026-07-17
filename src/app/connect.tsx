@@ -128,14 +128,6 @@ export default function ConnectScreen() {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.intro}>
-          <Text style={styles.eyebrow}>SSH / PASSWORD</Text>
-          <Text style={styles.heading}>Open a remote shell</Text>
-          <Text style={styles.caption}>
-            Credentials stay in SecureStore. Terminal traffic stays native.
-          </Text>
-        </View>
-
         <Field
           label="HOST"
           value={form.host}
@@ -245,36 +237,13 @@ function Field({ label, ...inputProps }: FieldProps) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#0b0d10',
+    backgroundColor: '#090a0c',
   },
   content: {
     padding: 22,
+    paddingTop: Platform.select({ ios: 88, android: 72 }),
     paddingBottom: 44,
     gap: 16,
-  },
-  intro: {
-    borderLeftWidth: 2,
-    borderLeftColor: '#81d4a3',
-    paddingLeft: 14,
-    marginBottom: 8,
-  },
-  eyebrow: {
-    color: '#81d4a3',
-    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace' }),
-    fontSize: 11,
-    letterSpacing: 1.6,
-  },
-  heading: {
-    color: '#f2f4f7',
-    fontSize: 26,
-    fontWeight: '700',
-    marginTop: 5,
-  },
-  caption: {
-    color: '#939aa5',
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: 7,
   },
   field: {
     gap: 7,

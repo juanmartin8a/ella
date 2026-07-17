@@ -26,6 +26,7 @@ export default function TerminalScreen() {
     'disconnecting',
   ].includes(controller.state)
   const connected = controller.state === 'connected'
+  const title = controller.connectionHost ?? stateTitles[controller.state]
   const icon =
     Platform.OS === 'ios'
       ? connected
@@ -37,7 +38,11 @@ export default function TerminalScreen() {
 
   return (
     <View style={styles.container}>
-      <Stack.Title>{stateTitles[controller.state]}</Stack.Title>
+      <Stack.Header
+        transparent
+        blurEffect={Platform.OS === 'ios' ? 'systemMaterial' : undefined}
+      />
+      <Stack.Title>{title}</Stack.Title>
       <Stack.Toolbar placement="right">
         <Stack.Toolbar.Button
           accessibilityLabel={connected ? 'Disconnect' : 'Connect'}
