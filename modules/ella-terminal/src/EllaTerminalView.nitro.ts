@@ -58,6 +58,7 @@ export interface HostKeyRequestEvent {
 }
 
 export interface EllaTerminalViewProps extends HybridViewProps {
+  headerInset: number
   onConnectionStateChange?: (event: ConnectionStateEvent) => void
   onHostKeyRequest?: (event: HostKeyRequestEvent) => void
 }

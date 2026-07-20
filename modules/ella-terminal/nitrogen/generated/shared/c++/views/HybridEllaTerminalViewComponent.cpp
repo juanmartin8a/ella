@@ -26,6 +26,16 @@ namespace margelo::nitro::ella::terminal::views {
                                                            const HybridEllaTerminalViewProps& sourceProps,
                                                            const react::RawProps& rawProps):
     react::ViewProps(context, sourceProps, rawProps, filterObjectKeys),
+    headerInset([&]() -> CachedProp<double> {
+      try {
+        const react::RawValue* rawValue = rawProps.at("headerInset", nullptr, nullptr);
+        if (rawValue == nullptr) return sourceProps.headerInset;
+        const auto& [runtime, value] = (std::pair<jsi::Runtime*, jsi::Value>)*rawValue;
+        return CachedProp<double>::fromRawValue(*runtime, value, sourceProps.headerInset);
+      } catch (const std::exception& exc) {
+        throw std::runtime_error(std::string("EllaTerminalView.headerInset: ") + exc.what());
+      }
+    }()),
     onConnectionStateChange([&]() -> CachedProp<std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>> {
       try {
         const react::RawValue* rawValue = rawProps.at("onConnectionStateChange", nullptr, nullptr);
@@ -59,6 +69,7 @@ namespace margelo::nitro::ella::terminal::views {
 
   bool HybridEllaTerminalViewProps::filterObjectKeys(const std::string& propName) {
     switch (hashString(propName)) {
+      case hashString("headerInset"): return true;
       case hashString("onConnectionStateChange"): return true;
       case hashString("onHostKeyRequest"): return true;
       case hashString("hybridRef"): return true;

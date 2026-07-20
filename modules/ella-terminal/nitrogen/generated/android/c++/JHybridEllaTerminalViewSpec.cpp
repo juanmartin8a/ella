@@ -69,6 +69,15 @@ namespace margelo::nitro::ella::terminal {
   }
 
   // Properties
+  double JHybridEllaTerminalViewSpec::getHeaderInset() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getHeaderInset");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridEllaTerminalViewSpec::setHeaderInset(double headerInset) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* headerInset */)>("setHeaderInset");
+    method(_javaPart, headerInset);
+  }
   std::optional<std::function<void(const ConnectionStateEvent& /* event */)>> JHybridEllaTerminalViewSpec::getOnConnectionStateChange() {
     static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JFunc_void_ConnectionStateEvent::javaobject>()>("getOnConnectionStateChange_cxx");
     auto __result = method(_javaPart);

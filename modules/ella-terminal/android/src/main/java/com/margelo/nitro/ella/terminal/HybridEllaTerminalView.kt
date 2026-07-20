@@ -9,11 +9,17 @@ import android.os.Handler
 import android.os.Looper
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.facebook.react.uimanager.ThemedReactContext
 import java.nio.charset.StandardCharsets
@@ -28,6 +34,12 @@ class HybridEllaTerminalView(
 ) : HybridEllaTerminalViewSpec() {
   override var onConnectionStateChange: ((event: ConnectionStateEvent) -> Unit)? = null
   override var onHostKeyRequest: ((event: HostKeyRequestEvent) -> Unit)? = null
+  private val headerInsetState = mutableDoubleStateOf(0.0)
+  override var headerInset: Double
+    get() = headerInsetState.doubleValue
+    set(value) {
+      headerInsetState.doubleValue = value.coerceAtLeast(0.0)
+    }
 
   private val viewDropped = AtomicBoolean(false)
   private val hybridDisposed = AtomicBoolean(false)
@@ -72,23 +84,31 @@ class HybridEllaTerminalView(
       ViewCompositionStrategy.DisposeOnDetachedFromWindowOrReleasedFromPool,
     )
     setContent {
-      Terminal(
-        terminalEmulator = terminalEmulator,
-        modifier = Modifier.fillMaxSize(),
-        initialFontSize = 13.sp,
-        backgroundColor = Color(0xFF090A0C),
-        foregroundColor = Color(0xFFE8E8E8),
-        selectionBackgroundColor = Color(0xFF315A78),
-        selectionForegroundColor = Color.White,
-        keyboardEnabled = true,
-        showSoftKeyboard = true,
-        onHyperlinkClick = { link ->
-          mainHandler.post { openLink(link) }
-        },
-        onPasteRequest = {
-          mainHandler.post { pasteClipboard() }
-        },
-      )
+      Box(modifier = Modifier.fillMaxSize()) {
+        Terminal(
+          terminalEmulator = terminalEmulator,
+          modifier = Modifier.fillMaxSize(),
+          initialFontSize = 13.sp,
+          backgroundColor = Color(0xFF090A0C),
+          foregroundColor = Color(0xFFE8E8E8),
+          selectionBackgroundColor = Color(0xFF315A78),
+          selectionForegroundColor = Color.White,
+          keyboardEnabled = true,
+          showSoftKeyboard = true,
+          onHyperlinkClick = { link ->
+            mainHandler.post { openLink(link) }
+          },
+          onPasteRequest = {
+            mainHandler.post { pasteClipboard() }
+          },
+        )
+        Box(
+          modifier = Modifier
+            .fillMaxWidth()
+            .height(headerInsetState.doubleValue.toFloat().dp)
+            .background(Color(0xFF090A0C)),
+        )
+      }
     }
   }
   private val outputPump = EllaTerminalOutputPump(

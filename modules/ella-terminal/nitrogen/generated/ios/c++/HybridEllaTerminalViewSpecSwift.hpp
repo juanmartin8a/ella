@@ -81,6 +81,12 @@ namespace margelo::nitro::ella::terminal {
 
   public:
     // Properties
+    inline double getHeaderInset() noexcept override {
+      return _swiftPart.getHeaderInset();
+    }
+    inline void setHeaderInset(double headerInset) noexcept override {
+      _swiftPart.setHeaderInset(std::forward<decltype(headerInset)>(headerInset));
+    }
     inline std::optional<std::function<void(const ConnectionStateEvent& /* event */)>> getOnConnectionStateChange() noexcept override {
       auto __result = _swiftPart.getOnConnectionStateChange();
       return __result;

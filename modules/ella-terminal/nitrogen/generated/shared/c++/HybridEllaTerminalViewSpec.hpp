@@ -54,6 +54,8 @@ namespace margelo::nitro::ella::terminal {
 
     public:
       // Properties
+      virtual double getHeaderInset() = 0;
+      virtual void setHeaderInset(double headerInset) = 0;
       virtual std::optional<std::function<void(const ConnectionStateEvent& /* event */)>> getOnConnectionStateChange() = 0;
       virtual void setOnConnectionStateChange(const std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>& onConnectionStateChange) = 0;
       virtual std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>> getOnHostKeyRequest() = 0;

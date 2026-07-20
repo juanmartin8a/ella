@@ -173,6 +173,7 @@ export default function ConnectScreen() {
             <Text style={styles.switchCaption}>This device only on iOS</Text>
           </View>
           <Switch
+            style={styles.switch}
             value={form.savePassword}
             onValueChange={(savePassword) =>
               setForm((current) => ({ ...current, savePassword }))
@@ -276,6 +277,9 @@ const styles = StyleSheet.create({
   },
   switchCopy: {
     gap: 2,
+  },
+  switch: {
+    alignSelf: 'center',
   },
   switchTitle: {
     color: '#e7eaf0',

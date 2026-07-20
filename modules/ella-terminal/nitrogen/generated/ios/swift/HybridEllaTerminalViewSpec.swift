@@ -10,6 +10,7 @@ import NitroModules
 /// See ``HybridEllaTerminalViewSpec``
 public protocol HybridEllaTerminalViewSpec_protocol: HybridObject, HybridView {
   // Properties
+  var headerInset: Double { get set }
   var onConnectionStateChange: ((_ event: ConnectionStateEvent) -> Void)? { get set }
   var onHostKeyRequest: ((_ event: HostKeyRequestEvent) -> Void)? { get set }
 

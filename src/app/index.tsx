@@ -2,6 +2,7 @@ import PlugConnectIcon from '@expo/material-symbols/plug_connect.xml'
 import PowerIcon from '@expo/material-symbols/power_settings_new.xml'
 import { EllaTerminal } from 'ella-terminal'
 import { router, Stack } from 'expo-router'
+import { useHeaderHeight } from 'expo-router/react-navigation'
 import { Platform, StyleSheet, View } from 'react-native'
 
 import { useConnectionController } from '../connection/ConnectionController'
@@ -19,6 +20,7 @@ const stateTitles = {
 
 export default function TerminalScreen() {
   const controller = useConnectionController()
+  const headerInset = useHeaderHeight()
   const transitioning = [
     'connecting',
     'awaitingHostKey',
@@ -40,7 +42,7 @@ export default function TerminalScreen() {
     <View style={styles.container}>
       <Stack.Header
         transparent
-        blurEffect={Platform.OS === 'ios' ? 'systemMaterial' : undefined}
+        // blurEffect={Platform.OS === 'ios' ? 'systemMaterial' : undefined}
       />
       <Stack.Title>{title}</Stack.Title>
       <Stack.Toolbar placement="right">
@@ -54,6 +56,7 @@ export default function TerminalScreen() {
         </Stack.Toolbar.Button>
       </Stack.Toolbar>
       <EllaTerminal
+        headerInset={headerInset}
         hybridRef={controller.hybridRef}
         onConnectionStateChange={controller.onConnectionStateChange}
         onHostKeyRequest={controller.onHostKeyRequest}
@@ -66,7 +69,7 @@ export default function TerminalScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#090a0c',
+    // backgroundColor: '#090a0c',
   },
   terminal: {
     flex: 1,

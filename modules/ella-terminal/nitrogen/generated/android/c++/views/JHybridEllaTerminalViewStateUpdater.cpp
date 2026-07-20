@@ -37,6 +37,10 @@ void JHybridEllaTerminalViewStateUpdater::updateViewProps(jni::alias_ref<jni::JC
   }
 
   // Update all props if they are dirty
+  if (props->headerInset.isDirty) {
+    hybridView->setHeaderInset(props->headerInset.value);
+    props->headerInset.isDirty = false;
+  }
   if (props->onConnectionStateChange.isDirty) {
     hybridView->setOnConnectionStateChange(props->onConnectionStateChange.value);
     props->onConnectionStateChange.isDirty = false;

@@ -84,7 +84,7 @@ open class HybridEllaTerminalViewSpec_cxx {
     }
   }
 
-  
+
 
   /**
    * Get the memory size of the Swift class (plus size of any other allocations)
@@ -121,6 +121,17 @@ open class HybridEllaTerminalViewSpec_cxx {
   }
 
   // Properties
+  public final var headerInset: Double {
+    @inline(__always)
+    get {
+      return self.__implementation.headerInset
+    }
+    @inline(__always)
+    set {
+      self.__implementation.headerInset = newValue
+    }
+  }
+
   public final var onConnectionStateChange: bridge.std__optional_std__function_void_const_ConnectionStateEvent_____event______ {
     @inline(__always)
     get {

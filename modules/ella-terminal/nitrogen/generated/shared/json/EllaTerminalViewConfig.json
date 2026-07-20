@@ -4,6 +4,7 @@
   "bubblingEventTypes": {},
   "directEventTypes": {},
   "validAttributes": {
+    "headerInset": true,
     "onConnectionStateChange": true,
     "onHostKeyRequest": true,
     "hybridRef": true

@@ -79,6 +79,11 @@ using namespace margelo::nitro::ella::terminal::views;
   // 2. Update each prop individually
   swiftPart.beforeUpdate();
 
+  // headerInset: number
+  if (newViewProps.headerInset.isDirty) {
+    swiftPart.setHeaderInset(newViewProps.headerInset.value);
+    newViewProps.headerInset.isDirty = false;
+  }
   // onConnectionStateChange: optional
   if (newViewProps.onConnectionStateChange.isDirty) {
     swiftPart.setOnConnectionStateChange(newViewProps.onConnectionStateChange.value);

@@ -14,6 +14,8 @@ namespace margelo::nitro::ella::terminal {
     HybridObject::loadHybridMethods();
     // load custom methods/properties
     registerHybrids(this, [](Prototype& prototype) {
+      prototype.registerHybridGetter("headerInset", &HybridEllaTerminalViewSpec::getHeaderInset);
+      prototype.registerHybridSetter("headerInset", &HybridEllaTerminalViewSpec::setHeaderInset);
       prototype.registerHybridGetter("onConnectionStateChange", &HybridEllaTerminalViewSpec::getOnConnectionStateChange);
       prototype.registerHybridSetter("onConnectionStateChange", &HybridEllaTerminalViewSpec::setOnConnectionStateChange);
       prototype.registerHybridGetter("onHostKeyRequest", &HybridEllaTerminalViewSpec::getOnHostKeyRequest);

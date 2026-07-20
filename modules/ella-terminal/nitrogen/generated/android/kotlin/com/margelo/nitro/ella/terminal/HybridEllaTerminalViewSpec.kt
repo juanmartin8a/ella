@@ -26,8 +26,14 @@ import com.margelo.nitro.views.HybridView
 )
 abstract class HybridEllaTerminalViewSpec: HybridView() {
   // Properties
+  @get:DoNotStrip
+  @get:Keep
+  @set:DoNotStrip
+  @set:Keep
+  abstract var headerInset: Double
+
   abstract var onConnectionStateChange: ((event: ConnectionStateEvent) -> Unit)?
-  
+
   private var onConnectionStateChange_cxx: Func_void_ConnectionStateEvent?
     @Keep
     @DoNotStrip

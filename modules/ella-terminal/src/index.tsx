@@ -16,12 +16,14 @@ const EllaTerminalHost = getHostComponent<
 >('EllaTerminalView', () => EllaTerminalViewConfig)
 
 export interface EllaTerminalProps extends ViewProps {
+  headerInset: number
   hybridRef?: (ref: EllaTerminalView) => void
   onConnectionStateChange?: (event: ConnectionStateEvent) => void
   onHostKeyRequest?: (event: HostKeyRequestEvent) => void
 }
 
 export function EllaTerminal({
+  headerInset,
   hybridRef,
   onConnectionStateChange,
   onHostKeyRequest,
@@ -30,6 +32,7 @@ export function EllaTerminal({
   return (
     <EllaTerminalHost
       {...viewProps}
+      headerInset={headerInset}
       hybridRef={callback(hybridRef)}
       onConnectionStateChange={callback(onConnectionStateChange)}
       onHostKeyRequest={callback(onHostKeyRequest)}

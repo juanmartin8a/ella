@@ -12,7 +12,10 @@ export default function RootLayout() {
     <ThemeProvider value={DarkTheme}>
       <ConnectionControllerProvider>
         <Stack>
-          <Stack.Screen name="index" options={{ title: 'Ella' }} />
+          <Stack.Screen
+            name="index"
+            options={{ title: 'Ella', contentStyle: { paddingBottom: 0 } }}
+          />
           <Stack.Screen
             name="connect"
             options={{
