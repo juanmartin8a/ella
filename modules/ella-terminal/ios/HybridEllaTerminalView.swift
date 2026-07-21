@@ -14,7 +14,7 @@ final class HybridEllaTerminalView: HybridEllaTerminalViewSpec, TerminalViewDele
   var onHostKeyRequest: ((HostKeyRequestEvent) -> Void)?
   var headerInset: Double = 0 {
     didSet {
-      containerView.headerInset = CGFloat(max(0, headerInset))
+      terminalView.topInset = CGFloat(max(0, headerInset))
     }
   }
 
@@ -207,46 +207,60 @@ final class HybridEllaTerminalView: HybridEllaTerminalViewSpec, TerminalViewDele
 
 private final class EllaSwiftTermView: TerminalView {
   var onFirstLayout: (() -> Void)?
+  private var initialTopInsetActive = true
+  private var applyingInitialContentOffset = false
+
+  var topInset: CGFloat = 0 {
+    didSet {
+      contentInsetAdjustmentBehavior = .never
+      contentInset.top = topInset
+      verticalScrollIndicatorInsets.top = topInset
+      applyInitialContentOffset()
+    }
+  }
+
+  override var contentOffset: CGPoint {
+    didSet {
+      guard initialTopInsetActive, !applyingInitialContentOffset else { return }
+
+      if isTracking || contentOffset.y > 0 {
+        initialTopInsetActive = false
+      } else {
+        applyInitialContentOffset()
+      }
+    }
+  }
 
   override func layoutSubviews() {
     super.layoutSubviews()
+    applyInitialContentOffset()
     guard !bounds.isEmpty, let onFirstLayout else { return }
     self.onFirstLayout = nil
     onFirstLayout()
   }
+
+  private func applyInitialContentOffset() {
+    guard initialTopInsetActive, topInset > 0 else { return }
+    let targetOffset = -topInset
+    guard contentOffset.y != targetOffset else { return }
+
+    applyingInitialContentOffset = true
+    setContentOffset(CGPoint(x: contentOffset.x, y: targetOffset), animated: false)
+    applyingInitialContentOffset = false
+  }
 }
 
 private final class KeyboardAvoidingTerminalContainer: UIView {
-  private let headerCoverView = UIView()
-  private var headerCoverHeightConstraint: NSLayoutConstraint?
-
   func install(_ terminalView: UIView) {
     terminalView.translatesAutoresizingMaskIntoConstraints = false
     addSubview(terminalView)
+    keyboardLayoutGuide.usesBottomSafeArea = false
+
     NSLayoutConstraint.activate([
       terminalView.topAnchor.constraint(equalTo: topAnchor),
       terminalView.leadingAnchor.constraint(equalTo: leadingAnchor),
       terminalView.trailingAnchor.constraint(equalTo: trailingAnchor),
       terminalView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
     ])
-
-    headerCoverView.backgroundColor = .black
-    headerCoverView.isUserInteractionEnabled = false
-    headerCoverView.translatesAutoresizingMaskIntoConstraints = false
-    addSubview(headerCoverView)
-    let headerCoverHeightConstraint = headerCoverView.heightAnchor.constraint(equalToConstant: 0)
-    self.headerCoverHeightConstraint = headerCoverHeightConstraint
-    NSLayoutConstraint.activate([
-      headerCoverView.topAnchor.constraint(equalTo: topAnchor),
-      headerCoverView.leadingAnchor.constraint(equalTo: leadingAnchor),
-      headerCoverView.trailingAnchor.constraint(equalTo: trailingAnchor),
-      headerCoverHeightConstraint,
-    ])
-  }
-
-  var headerInset: CGFloat = 0 {
-    didSet {
-      headerCoverHeightConstraint?.constant = headerInset
-    }
   }
 }

@@ -42,7 +42,6 @@ export default function TerminalScreen() {
     <View style={styles.container}>
       <Stack.Header
         transparent
-        // blurEffect={Platform.OS === 'ios' ? 'systemMaterial' : undefined}
       />
       <Stack.Title>{title}</Stack.Title>
       <Stack.Toolbar placement="right">
@@ -68,8 +67,11 @@ export default function TerminalScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    // backgroundColor: '#090a0c',
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
   },
   terminal: {
     flex: 1,

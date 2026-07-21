@@ -33,7 +33,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "deploymentTarget": "16.4",
+      "deploymentTarget": "17.0",
       "bundleIdentifier": "com.juanmartin8a.ella",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false

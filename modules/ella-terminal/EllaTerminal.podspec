@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license      = package["license"]
   s.authors      = "Ella"
 
-  s.platforms    = { :ios => min_ios_version_supported }
+  s.platforms    = { :ios => "17.0" }
   s.source       = { :path => "." }
   s.source_files = [
     "ios/**/*.{swift}",
