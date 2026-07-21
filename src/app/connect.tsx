@@ -128,44 +128,46 @@ export default function ConnectScreen() {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
-        <Field
-          label="HOST"
-          value={form.host}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="server.example.com or 2001:db8::1"
-          onBlur={() => void refreshTrustedHostKey()}
-          onChangeText={(host) => setForm((current) => ({ ...current, host }))}
-        />
-        <Field
-          label="PORT"
-          value={portText}
-          keyboardType="number-pad"
-          placeholder="22"
-          onBlur={() => void refreshTrustedHostKey()}
-          onChangeText={setPortText}
-        />
-        <Field
-          label="USERNAME"
-          value={form.username}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="operator"
-          onChangeText={(username) =>
-            setForm((current) => ({ ...current, username }))
-          }
-        />
-        <Field
-          label="PASSWORD"
-          value={form.password}
-          autoCapitalize="none"
-          autoCorrect={false}
-          secureTextEntry
-          placeholder="Required"
-          onChangeText={(password) =>
-            setForm((current) => ({ ...current, password }))
-          }
-        />
+        <View style={styles.fields}>
+          <Field
+            label="HOST"
+            value={form.host}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="server.example.com or 2001:db8::1"
+            onBlur={() => void refreshTrustedHostKey()}
+            onChangeText={(host) => setForm((current) => ({ ...current, host }))}
+          />
+          <Field
+            label="PORT"
+            value={portText}
+            keyboardType="number-pad"
+            placeholder="22"
+            onBlur={() => void refreshTrustedHostKey()}
+            onChangeText={setPortText}
+          />
+          <Field
+            label="USERNAME"
+            value={form.username}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="operator"
+            onChangeText={(username) =>
+              setForm((current) => ({ ...current, username }))
+            }
+          />
+          <Field
+            label="PASSWORD"
+            value={form.password}
+            autoCapitalize="none"
+            autoCorrect={false}
+            secureTextEntry
+            placeholder="Required"
+            onChangeText={(password) =>
+              setForm((current) => ({ ...current, password }))
+            }
+          />
+        </View>
 
         <View style={styles.switchRow}>
           <View style={styles.switchCopy}>
@@ -229,6 +231,7 @@ function Field({ label, ...inputProps }: FieldProps) {
         {...inputProps}
         placeholderTextColor="#5f6672"
         selectionColor="#81d4a3"
+        underlineColorAndroid="transparent"
         style={styles.input}
       />
     </View>
@@ -246,25 +249,28 @@ const styles = StyleSheet.create({
     paddingBottom: 44,
     gap: 16,
   },
+  fields: {
+    gap: 4,
+  },
   field: {
-    gap: 7,
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 50,
+    gap: 16,
   },
   label: {
+    width: 78,
     color: '#7f8792',
     fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace' }),
     fontSize: 11,
     letterSpacing: 1.3,
   },
   input: {
-    minHeight: 50,
-    borderWidth: 1,
-    borderColor: '#2a2f37',
-    borderRadius: 5,
-    backgroundColor: '#12151a',
+    flex: 1,
     color: '#eef1f5',
     fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace' }),
     fontSize: 15,
-    paddingHorizontal: 14,
+    padding: 0,
   },
   switchRow: {
     minHeight: 58,
