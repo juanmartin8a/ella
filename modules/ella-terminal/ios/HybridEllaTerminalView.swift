@@ -218,27 +218,16 @@ private final class EllaSwiftTermView: TerminalView {
 
 private final class KeyboardAvoidingTerminalContainer: UIView {
   private let headerCoverView = UIView()
-  private var terminalBottomConstraint: NSLayoutConstraint?
   private var headerCoverHeightConstraint: NSLayoutConstraint?
-  private var keyboardFrame: CGRect?
-  private var keyboardObserver: NSObjectProtocol?
-
-  deinit {
-    if let keyboardObserver {
-      NotificationCenter.default.removeObserver(keyboardObserver)
-    }
-  }
 
   func install(_ terminalView: UIView) {
     terminalView.translatesAutoresizingMaskIntoConstraints = false
     addSubview(terminalView)
-    let terminalBottomConstraint = terminalView.bottomAnchor.constraint(equalTo: bottomAnchor)
-    self.terminalBottomConstraint = terminalBottomConstraint
     NSLayoutConstraint.activate([
       terminalView.topAnchor.constraint(equalTo: topAnchor),
       terminalView.leadingAnchor.constraint(equalTo: leadingAnchor),
       terminalView.trailingAnchor.constraint(equalTo: trailingAnchor),
-      terminalBottomConstraint,
+      terminalView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
     ])
 
     headerCoverView.backgroundColor = .black
@@ -253,53 +242,11 @@ private final class KeyboardAvoidingTerminalContainer: UIView {
       headerCoverView.trailingAnchor.constraint(equalTo: trailingAnchor),
       headerCoverHeightConstraint,
     ])
-
-    keyboardObserver = NotificationCenter.default.addObserver(
-      forName: UIResponder.keyboardWillChangeFrameNotification,
-      object: nil,
-      queue: .main
-    ) { [weak self] notification in
-      self?.updateKeyboardFrame(notification)
-    }
   }
 
   var headerInset: CGFloat = 0 {
     didSet {
       headerCoverHeightConstraint?.constant = headerInset
     }
-  }
-
-  override func layoutSubviews() {
-    super.layoutSubviews()
-    updateTerminalBottomConstraint()
-  }
-
-  private func updateKeyboardFrame(_ notification: Notification) {
-    guard
-      let frameValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
-    else {
-      return
-    }
-
-    keyboardFrame = frameValue.cgRectValue
-    updateTerminalBottomConstraint()
-
-    let duration = (notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue
-    let curve = (notification.userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber)?.uintValue
-    let options: UIView.AnimationOptions = curve.map { UIView.AnimationOptions(rawValue: $0 << 16) } ?? []
-    UIView.animate(
-      withDuration: duration ?? 0.25,
-      delay: 0,
-      options: [options, .beginFromCurrentState]
-    ) { [weak self] in
-      self?.layoutIfNeeded()
-    }
-  }
-
-  private func updateTerminalBottomConstraint() {
-    guard let keyboardFrame, window != nil else { return }
-    let keyboardFrameInView = convert(keyboardFrame, from: nil)
-    let keyboardOverlap = bounds.intersection(keyboardFrameInView).height
-    terminalBottomConstraint?.constant = -max(0, keyboardOverlap)
   }
 }
