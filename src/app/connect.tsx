@@ -172,7 +172,7 @@ export default function ConnectScreen() {
         <View style={styles.switchRow}>
           <View style={styles.switchCopy}>
             <Text style={styles.switchTitle}>Save password</Text>
-            <Text style={styles.switchCaption}>This device only on iOS</Text>
+            <Text style={styles.switchCaption}>Stored securely on this device</Text>
           </View>
           <Switch
             style={styles.switch}
