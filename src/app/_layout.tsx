@@ -19,10 +19,10 @@ export default function RootLayout() {
           <Stack.Screen
             name="connect"
             options={{
-              presentation: 'modal',
-              title: 'Connect',
-              headerTransparent: true,
-              headerShadowVisible: true,
+              presentation: 'formSheet',
+              headerShown: false,
+              sheetAllowedDetents: 'fitToContents',
+              // sheetGrabberVisible: true,
             }}
           />
         </Stack>

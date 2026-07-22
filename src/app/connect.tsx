@@ -1,11 +1,11 @@
-import { router, Stack } from 'expo-router'
+import { GlassView } from 'expo-glass-effect'
+import { router } from 'expo-router'
 import { useEffect, useState } from 'react'
 import {
   Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   Switch,
   Text,
@@ -71,6 +71,8 @@ export default function ConnectScreen() {
     'authenticating',
     'disconnecting',
   ].includes(controller.state)
+  const connectDisabled =
+    !valid || loading || submitting || transitioning || !controller.viewReady
 
   const refreshTrustedHostKey = async () => {
     if (!Number.isInteger(parsedPort) || parsedPort < 1 || parsedPort > 65535) {
@@ -123,10 +125,8 @@ export default function ConnectScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.screen}
     >
-      <Stack.Title>Connect</Stack.Title>
-      <ScrollView
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
+      <View
+        style={styles.content}
       >
         <View style={styles.fields}>
           <Field
@@ -195,26 +195,37 @@ export default function ConnectScreen() {
 
         <Pressable
           accessibilityRole="button"
-          disabled={
-            !valid ||
-            loading ||
-            submitting ||
-            transitioning ||
-            !controller.viewReady
-          }
+          disabled={connectDisabled}
           onPress={() => void submit()}
           style={({ pressed }) => [
             styles.connectButton,
-            (!valid || loading || submitting || transitioning || !controller.viewReady) &&
+            Platform.OS === 'ios' && styles.connectButtonIOS,
+            connectDisabled &&
+              Platform.OS !== 'ios' &&
               styles.connectButtonDisabled,
-            pressed && styles.connectButtonPressed,
+            pressed && Platform.OS !== 'ios' && styles.connectButtonPressed,
           ]}
         >
-          <Text style={styles.connectText}>
+          {Platform.OS === 'ios' ? (
+            <GlassView
+              glassEffectStyle="clear"
+              isInteractive={!connectDisabled}
+              style={styles.connectButtonGlass}
+            />
+          ) : null}
+          <Text
+            style={[
+              styles.connectText,
+              Platform.OS === 'ios' && styles.connectTextIOS,
+              connectDisabled &&
+                Platform.OS === 'ios' &&
+                styles.connectTextDisabled,
+            ]}
+          >
             {submitting ? 'STARTING...' : 'CONNECT'}
           </Text>
         </Pressable>
-      </ScrollView>
+      </View>
     </KeyboardAvoidingView>
   )
 }
@@ -241,12 +252,10 @@ function Field({ label, ...inputProps }: FieldProps) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#090a0c',
+    // backgroundColor: '#090a0c',
   },
   content: {
     padding: 22,
-    paddingTop: Platform.select({ ios: 88, android: 72 }),
-    paddingBottom: 44,
     gap: 16,
   },
   fields: {
@@ -255,14 +264,14 @@ const styles = StyleSheet.create({
   field: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 50,
-    gap: 16,
+    minHeight: 40,
+    gap: 4,
   },
   label: {
     width: 78,
     color: '#7f8792',
     fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace' }),
-    fontSize: 11,
+    fontSize: 12,
     letterSpacing: 1.3,
   },
   input: {
@@ -270,6 +279,7 @@ const styles = StyleSheet.create({
     color: '#eef1f5',
     fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace' }),
     fontSize: 15,
+    letterSpacing: 1.3,
     padding: 0,
   },
   switchRow: {
@@ -277,9 +287,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: '#242932',
   },
   switchCopy: {
     gap: 2,
@@ -313,6 +320,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#81d4a3',
     marginTop: 6,
   },
+  connectButtonIOS: {
+    borderRadius: 999,
+    backgroundColor: 'transparent',
+    overflow: 'hidden',
+  },
+  connectButtonGlass: {
+    ...StyleSheet.absoluteFill,
+    borderRadius: 999,
+  },
   connectButtonDisabled: {
     opacity: 0.35,
   },
@@ -325,5 +341,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '800',
     letterSpacing: 1.4,
+  },
+  connectTextIOS: {
+    color: '#eef1f5',
+  },
+  connectTextDisabled: {
+    opacity: 0.35,
   },
 })
