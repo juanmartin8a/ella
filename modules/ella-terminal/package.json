@@ -10,6 +10,7 @@
     "src",
     "android",
     "ios",
+    "patches",
     "nitrogen",
     "nitro.json",
     "react-native.config.js",

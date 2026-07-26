@@ -1,3 +1,5 @@
+viewport_inset_patch = File.read(File.join(__dir__, "patches", "swiftterm-viewport-inset.patch"))
+
 Pod::Spec.new do |s|
   s.name         = "SwiftTerm"
   s.version      = "1.14.0"
@@ -6,6 +8,11 @@ Pod::Spec.new do |s|
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.authors      = { "Miguel de Icaza" => "miguel@tirania.org" }
   s.source       = { :git => "https://github.com/migueldeicaza/SwiftTerm.git", :tag => "v1.14.0" }
+  s.prepare_command = <<~CMD
+    patch -p1 <<'PATCH'
+    #{viewport_inset_patch}
+    PATCH
+  CMD
 
   s.ios.deployment_target = "14.0"
   s.swift_version = "5.9"
