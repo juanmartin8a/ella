@@ -27,6 +27,14 @@ export type TerminalErrorCode =
   | 'cancelled'
   | 'internalError'
 
+export type TerminalKey =
+  | 'escape'
+  | 'tab'
+  | 'left'
+  | 'up'
+  | 'down'
+  | 'right'
+
 export interface TrustedHostKey {
   algorithm: string
   fingerprint: string
@@ -60,6 +68,7 @@ export interface HostKeyRequestEvent {
 export interface EllaTerminalViewProps extends HybridViewProps {
   headerInset: number
   onConnectionStateChange?: (event: ConnectionStateEvent) => void
+  onControlModifierChange?: (active: boolean) => void
   onHostKeyRequest?: (event: HostKeyRequestEvent) => void
 }
 
@@ -71,6 +80,10 @@ export interface EllaTerminalViewMethods extends HybridViewMethods {
     requestId: string,
     accepted: boolean
   ): void
+  sendKey(key: TerminalKey): void
+  setControlModifier(active: boolean): void
+  showKeyboard(): void
+  hideKeyboard(): void
 }
 
 export type EllaTerminalView = HybridView<

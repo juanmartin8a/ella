@@ -17,6 +17,7 @@
 
 #include "JHybridEllaTerminalViewSpec.hpp"
 #include "JFunc_void_ConnectionStateEvent.hpp"
+#include "JFunc_void_bool.hpp"
 #include "JFunc_void_HostKeyRequestEvent.hpp"
 #include "views/JHybridEllaTerminalViewStateUpdater.hpp"
 #include <NitroModules/DefaultConstructableObject.hpp>
@@ -45,6 +46,7 @@ void registerAllNatives() {
   // Register native JNI methods
   margelo::nitro::ella::terminal::JHybridEllaTerminalViewSpec::CxxPart::registerNatives();
   margelo::nitro::ella::terminal::JFunc_void_ConnectionStateEvent_cxx::registerNatives();
+  margelo::nitro::ella::terminal::JFunc_void_bool_cxx::registerNatives();
   margelo::nitro::ella::terminal::JFunc_void_HostKeyRequestEvent_cxx::registerNatives();
   margelo::nitro::ella::terminal::views::JHybridEllaTerminalViewStateUpdater::registerNatives();
 

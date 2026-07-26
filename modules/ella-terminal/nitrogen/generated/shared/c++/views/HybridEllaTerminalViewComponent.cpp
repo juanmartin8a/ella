@@ -46,6 +46,16 @@ namespace margelo::nitro::ella::terminal::views {
         throw std::runtime_error(std::string("EllaTerminalView.onConnectionStateChange: ") + exc.what());
       }
     }()),
+    onControlModifierChange([&]() -> CachedProp<std::optional<std::function<void(bool /* active */)>>> {
+      try {
+        const react::RawValue* rawValue = rawProps.at("onControlModifierChange", nullptr, nullptr);
+        if (rawValue == nullptr) return sourceProps.onControlModifierChange;
+        const auto& [runtime, value] = (std::pair<jsi::Runtime*, jsi::Value>)*rawValue;
+        return CachedProp<std::optional<std::function<void(bool /* active */)>>>::fromRawValue(*runtime, value.asObject(*runtime).getProperty(*runtime, PropNameIDCache::get(*runtime, "f")), sourceProps.onControlModifierChange);
+      } catch (const std::exception& exc) {
+        throw std::runtime_error(std::string("EllaTerminalView.onControlModifierChange: ") + exc.what());
+      }
+    }()),
     onHostKeyRequest([&]() -> CachedProp<std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>> {
       try {
         const react::RawValue* rawValue = rawProps.at("onHostKeyRequest", nullptr, nullptr);
@@ -71,6 +81,7 @@ namespace margelo::nitro::ella::terminal::views {
     switch (hashString(propName)) {
       case hashString("headerInset"): return true;
       case hashString("onConnectionStateChange"): return true;
+      case hashString("onControlModifierChange"): return true;
       case hashString("onHostKeyRequest"): return true;
       case hashString("hybridRef"): return true;
       default: return false;

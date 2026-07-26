@@ -89,6 +89,11 @@ using namespace margelo::nitro::ella::terminal::views;
     swiftPart.setOnConnectionStateChange(newViewProps.onConnectionStateChange.value);
     newViewProps.onConnectionStateChange.isDirty = false;
   }
+  // onControlModifierChange: optional
+  if (newViewProps.onControlModifierChange.isDirty) {
+    swiftPart.setOnControlModifierChange(newViewProps.onControlModifierChange.value);
+    newViewProps.onControlModifierChange.isDirty = false;
+  }
   // onHostKeyRequest: optional
   if (newViewProps.onHostKeyRequest.isDirty) {
     swiftPart.setOnHostKeyRequest(newViewProps.onHostKeyRequest.value);

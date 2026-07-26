@@ -19,6 +19,8 @@ namespace margelo::nitro::ella::terminal { struct ConnectionStateEvent; }
 namespace margelo::nitro::ella::terminal { struct HostKeyRequestEvent; }
 // Forward declaration of `ConnectionConfig` to properly resolve imports.
 namespace margelo::nitro::ella::terminal { struct ConnectionConfig; }
+// Forward declaration of `TerminalKey` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { enum class TerminalKey; }
 
 #include "ConnectionStateEvent.hpp"
 #include <functional>
@@ -26,6 +28,7 @@ namespace margelo::nitro::ella::terminal { struct ConnectionConfig; }
 #include "HostKeyRequestEvent.hpp"
 #include "ConnectionConfig.hpp"
 #include <string>
+#include "TerminalKey.hpp"
 
 namespace margelo::nitro::ella::terminal {
 
@@ -58,6 +61,8 @@ namespace margelo::nitro::ella::terminal {
       virtual void setHeaderInset(double headerInset) = 0;
       virtual std::optional<std::function<void(const ConnectionStateEvent& /* event */)>> getOnConnectionStateChange() = 0;
       virtual void setOnConnectionStateChange(const std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>& onConnectionStateChange) = 0;
+      virtual std::optional<std::function<void(bool /* active */)>> getOnControlModifierChange() = 0;
+      virtual void setOnControlModifierChange(const std::optional<std::function<void(bool /* active */)>>& onControlModifierChange) = 0;
       virtual std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>> getOnHostKeyRequest() = 0;
       virtual void setOnHostKeyRequest(const std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>& onHostKeyRequest) = 0;
 
@@ -66,6 +71,10 @@ namespace margelo::nitro::ella::terminal {
       virtual void connect(const ConnectionConfig& config) = 0;
       virtual void disconnect(const std::string& connectionId) = 0;
       virtual void respondToHostKey(const std::string& connectionId, const std::string& requestId, bool accepted) = 0;
+      virtual void sendKey(TerminalKey key) = 0;
+      virtual void setControlModifier(bool active) = 0;
+      virtual void showKeyboard() = 0;
+      virtual void hideKeyboard() = 0;
 
     protected:
       // Hybrid Setup

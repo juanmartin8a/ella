@@ -45,9 +45,23 @@ abstract class HybridEllaTerminalViewSpec: HybridView() {
     set(value) {
       onConnectionStateChange = value?.let { it }
     }
-  
+
+  abstract var onControlModifierChange: ((active: Boolean) -> Unit)?
+
+  private var onControlModifierChange_cxx: Func_void_bool?
+    @Keep
+    @DoNotStrip
+    get() {
+      return onControlModifierChange?.let { Func_void_bool_java(it) }
+    }
+    @Keep
+    @DoNotStrip
+    set(value) {
+      onControlModifierChange = value?.let { it }
+    }
+
   abstract var onHostKeyRequest: ((event: HostKeyRequestEvent) -> Unit)?
-  
+
   private var onHostKeyRequest_cxx: Func_void_HostKeyRequestEvent?
     @Keep
     @DoNotStrip
@@ -64,14 +78,30 @@ abstract class HybridEllaTerminalViewSpec: HybridView() {
   @DoNotStrip
   @Keep
   abstract fun connect(config: ConnectionConfig): Unit
-  
+
   @DoNotStrip
   @Keep
   abstract fun disconnect(connectionId: String): Unit
-  
+
   @DoNotStrip
   @Keep
   abstract fun respondToHostKey(connectionId: String, requestId: String, accepted: Boolean): Unit
+
+  @DoNotStrip
+  @Keep
+  abstract fun sendKey(key: TerminalKey): Unit
+
+  @DoNotStrip
+  @Keep
+  abstract fun setControlModifier(active: Boolean): Unit
+
+  @DoNotStrip
+  @Keep
+  abstract fun showKeyboard(): Unit
+
+  @DoNotStrip
+  @Keep
+  abstract fun hideKeyboard(): Unit
 
   // Default implementation of `HybridObject.toString()`
   override fun toString(): String {

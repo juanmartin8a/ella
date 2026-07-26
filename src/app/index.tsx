@@ -3,8 +3,10 @@ import PowerIcon from '@expo/material-symbols/power_settings_new.xml'
 import { EllaTerminal } from 'ella-terminal'
 import { router, Stack } from 'expo-router'
 import { useHeaderHeight } from 'expo-router/react-navigation'
-import { Platform, StyleSheet, View } from 'react-native'
+import { InputAccessoryView, Platform, StyleSheet, View } from 'react-native'
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller'
 
+import { TerminalExtraKeys } from '../components/TerminalExtraKeys'
 import { useConnectionController } from '../connection/ConnectionController'
 
 const stateTitles = {
@@ -54,13 +56,42 @@ export default function TerminalScreen() {
           {connected ? 'Disconnect' : 'Connect'}
         </Stack.Toolbar.Button>
       </Stack.Toolbar>
-      <EllaTerminal
-        headerInset={headerInset}
-        hybridRef={controller.hybridRef}
-        onConnectionStateChange={controller.onConnectionStateChange}
-        onHostKeyRequest={controller.onHostKeyRequest}
-        style={styles.terminal}
-      />
+      <KeyboardAvoidingView behavior="translate-with-padding" style={styles.terminalArea}>
+
+        <EllaTerminal
+          headerInset={headerInset}
+          hybridRef={controller.hybridRef}
+          onConnectionStateChange={controller.onConnectionStateChange}
+          onControlModifierChange={controller.onControlModifierChange}
+          onHostKeyRequest={controller.onHostKeyRequest}
+          style={styles.terminal}
+        />
+        {Platform.OS === 'android' && (
+          <TerminalExtraKeys
+            controlModifierActive={controller.controlModifierActive}
+            disabled={!connected}
+            onHideKeyboard={controller.hideKeyboard}
+            onSendKey={controller.sendKey}
+            onShowKeyboard={controller.showKeyboard}
+            onToggleControlModifier={controller.toggleControlModifier}
+          />
+        )}
+        {Platform.OS === 'ios' && (
+          <InputAccessoryView
+            backgroundColor="transparent"
+            nativeID="ella-terminal-extra-keys"
+          >
+            <TerminalExtraKeys
+              controlModifierActive={controller.controlModifierActive}
+              disabled={!connected}
+              onHideKeyboard={controller.hideKeyboard}
+              onSendKey={controller.sendKey}
+              onShowKeyboard={controller.showKeyboard}
+              onToggleControlModifier={controller.toggleControlModifier}
+            />
+          </InputAccessoryView>
+        )}
+      </KeyboardAvoidingView>
     </View>
   )
 }
@@ -74,6 +105,9 @@ const styles = StyleSheet.create({
     left: 0,
   },
   terminal: {
+    flex: 1,
+  },
+  terminalArea: {
     flex: 1,
   },
 })

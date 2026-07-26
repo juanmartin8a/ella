@@ -4,6 +4,7 @@ import type {
   EllaTerminalView,
   HostKeyRequestEvent,
   TerminalErrorCode,
+  TerminalKey,
 } from 'ella-terminal'
 import {
   createContext,
@@ -40,10 +41,16 @@ interface ConnectionDefaults extends ConnectionForm {
 interface ConnectionControllerValue {
   state: ConnectionState
   connectionHost: string | null
+  controlModifierActive: boolean
   viewReady: boolean
   hybridRef: (ref: EllaTerminalView) => void
   onConnectionStateChange: (event: ConnectionStateEvent) => void
+  onControlModifierChange: (active: boolean) => void
   onHostKeyRequest: (event: HostKeyRequestEvent) => void
+  sendKey: (key: TerminalKey) => void
+  toggleControlModifier: () => void
+  showKeyboard: () => void
+  hideKeyboard: () => void
   connect: (form: ConnectionForm) => Promise<void>
   disconnect: () => void
   getDefaults: () => Promise<ConnectionDefaults>
@@ -80,6 +87,7 @@ export function ConnectionControllerProvider({ children }: PropsWithChildren) {
   const hostKeyWriteQueueRef = useRef<Promise<void>>(Promise.resolve())
   const [state, setState] = useState<ConnectionState>('idle')
   const [connectionHost, setConnectionHost] = useState<string | null>(null)
+  const [controlModifierActive, setControlModifierActive] = useState(false)
   const [viewReady, setViewReady] = useState(false)
 
   const enqueueHostKeyOperation = useCallback(
@@ -107,6 +115,7 @@ export function ConnectionControllerProvider({ children }: PropsWithChildren) {
       hostKeyRequestRef.current = null
       connectionIdRef.current = null
       setConnectionHost(null)
+      terminalRef.current?.setControlModifier(false)
       const message = event.errorCode
         ? errorMessages[event.errorCode]
         : errorMessages.internalError
@@ -115,7 +124,30 @@ export function ConnectionControllerProvider({ children }: PropsWithChildren) {
       hostKeyRequestRef.current = null
       connectionIdRef.current = null
       setConnectionHost(null)
+      terminalRef.current?.setControlModifier(false)
     }
+  }, [])
+
+  const onControlModifierChange = useCallback((active: boolean) => {
+    setControlModifierActive(active)
+  }, [])
+
+  const sendKey = useCallback((key: TerminalKey) => {
+    terminalRef.current?.sendKey(key)
+  }, [])
+
+  const toggleControlModifier = useCallback(() => {
+    const active = !controlModifierActive
+    setControlModifierActive(active)
+    terminalRef.current?.setControlModifier(active)
+  }, [controlModifierActive])
+
+  const showKeyboard = useCallback(() => {
+    terminalRef.current?.showKeyboard()
+  }, [])
+
+  const hideKeyboard = useCallback(() => {
+    terminalRef.current?.hideKeyboard()
   }, [])
 
   const onHostKeyRequest = useCallback((event: HostKeyRequestEvent) => {
@@ -265,10 +297,16 @@ export function ConnectionControllerProvider({ children }: PropsWithChildren) {
       value={{
         state,
         connectionHost,
+        controlModifierActive,
         viewReady,
         hybridRef,
         onConnectionStateChange,
+        onControlModifierChange,
         onHostKeyRequest,
+        sendKey,
+        toggleControlModifier,
+        showKeyboard,
+        hideKeyboard,
         connect,
         disconnect,
         getDefaults,

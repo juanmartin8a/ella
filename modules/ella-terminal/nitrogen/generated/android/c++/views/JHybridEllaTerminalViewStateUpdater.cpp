@@ -45,6 +45,10 @@ void JHybridEllaTerminalViewStateUpdater::updateViewProps(jni::alias_ref<jni::JC
     hybridView->setOnConnectionStateChange(props->onConnectionStateChange.value);
     props->onConnectionStateChange.isDirty = false;
   }
+  if (props->onControlModifierChange.isDirty) {
+    hybridView->setOnControlModifierChange(props->onControlModifierChange.value);
+    props->onControlModifierChange.isDirty = false;
+  }
   if (props->onHostKeyRequest.isDirty) {
     hybridView->setOnHostKeyRequest(props->onHostKeyRequest.value);
     props->onHostKeyRequest.isDirty = false;

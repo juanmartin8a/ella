@@ -163,7 +163,39 @@ open class HybridEllaTerminalViewSpec_cxx {
       }()
     }
   }
-  
+
+  public final var onControlModifierChange: bridge.std__optional_std__function_void_bool____active______ {
+    @inline(__always)
+    get {
+      return { () -> bridge.std__optional_std__function_void_bool____active______ in
+        if let __unwrappedValue = self.__implementation.onControlModifierChange {
+          return bridge.create_std__optional_std__function_void_bool____active______({ () -> bridge.Func_void_bool in
+            let __closureWrapper = Func_void_bool(__unwrappedValue)
+            return bridge.create_Func_void_bool(__closureWrapper.toUnsafe())
+          }())
+        } else {
+          return .init()
+        }
+      }()
+    }
+    @inline(__always)
+    set {
+      self.__implementation.onControlModifierChange = { () -> ((_ active: Bool) -> Void)? in
+        if bridge.has_value_std__optional_std__function_void_bool____active______(newValue) {
+          let __unwrapped = bridge.get_std__optional_std__function_void_bool____active______(newValue)
+          return { () -> (Bool) -> Void in
+            let __wrappedFunction = bridge.wrap_Func_void_bool(__unwrapped)
+            return { (__active: Bool) -> Void in
+              __wrappedFunction.call(__active)
+            }
+          }()
+        } else {
+          return nil
+        }
+      }()
+    }
+  }
+
   public final var onHostKeyRequest: bridge.std__optional_std__function_void_const_HostKeyRequestEvent_____event______ {
     @inline(__always)
     get {
@@ -207,7 +239,7 @@ open class HybridEllaTerminalViewSpec_cxx {
       return bridge.create_Result_void_(__exceptionPtr)
     }
   }
-  
+
   @inline(__always)
   public final func disconnect(connectionId: std.string) -> bridge.Result_void_ {
     do {
@@ -218,7 +250,7 @@ open class HybridEllaTerminalViewSpec_cxx {
       return bridge.create_Result_void_(__exceptionPtr)
     }
   }
-  
+
   @inline(__always)
   public final func respondToHostKey(connectionId: std.string, requestId: std.string, accepted: Bool) -> bridge.Result_void_ {
     do {
@@ -229,24 +261,68 @@ open class HybridEllaTerminalViewSpec_cxx {
       return bridge.create_Result_void_(__exceptionPtr)
     }
   }
-  
+
+  @inline(__always)
+  public final func sendKey(key: Int32) -> bridge.Result_void_ {
+    do {
+      try self.__implementation.sendKey(key: margelo.nitro.ella.terminal.TerminalKey(rawValue: key)!)
+      return bridge.create_Result_void_()
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_void_(__exceptionPtr)
+    }
+  }
+
+  @inline(__always)
+  public final func setControlModifier(active: Bool) -> bridge.Result_void_ {
+    do {
+      try self.__implementation.setControlModifier(active: active)
+      return bridge.create_Result_void_()
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_void_(__exceptionPtr)
+    }
+  }
+
+  @inline(__always)
+  public final func showKeyboard() -> bridge.Result_void_ {
+    do {
+      try self.__implementation.showKeyboard()
+      return bridge.create_Result_void_()
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_void_(__exceptionPtr)
+    }
+  }
+
+  @inline(__always)
+  public final func hideKeyboard() -> bridge.Result_void_ {
+    do {
+      try self.__implementation.hideKeyboard()
+      return bridge.create_Result_void_()
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_void_(__exceptionPtr)
+    }
+  }
+
   public final func getView() -> UnsafeMutableRawPointer {
     return Unmanaged.passRetained(__implementation.view).toOpaque()
   }
-  
+
   public final func beforeUpdate() {
     __implementation.beforeUpdate()
   }
-  
+
   public final func afterUpdate() {
     __implementation.afterUpdate()
   }
-  
+
   public final func maybePrepareForRecycle() {
     guard let recyclable = __implementation as? any RecyclableView else { return }
     recyclable.prepareForRecycle()
   }
-  
+
   public final func onDropView() {
     __implementation.onDropView()
   }

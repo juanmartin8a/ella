@@ -19,6 +19,8 @@ namespace margelo::nitro::ella::terminal { struct HostKeyRequestEvent; }
 namespace margelo::nitro::ella::terminal { struct ConnectionConfig; }
 // Forward declaration of `TrustedHostKey` to properly resolve imports.
 namespace margelo::nitro::ella::terminal { struct TrustedHostKey; }
+// Forward declaration of `TerminalKey` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { enum class TerminalKey; }
 
 #include "ConnectionStateEvent.hpp"
 #include <functional>
@@ -31,6 +33,7 @@ namespace margelo::nitro::ella::terminal { struct TrustedHostKey; }
 #include "JConnectionState.hpp"
 #include "TerminalErrorCode.hpp"
 #include "JTerminalErrorCode.hpp"
+#include "JFunc_void_bool.hpp"
 #include "HostKeyRequestEvent.hpp"
 #include "JFunc_void_HostKeyRequestEvent.hpp"
 #include "JHostKeyRequestEvent.hpp"
@@ -38,6 +41,8 @@ namespace margelo::nitro::ella::terminal { struct TrustedHostKey; }
 #include "JConnectionConfig.hpp"
 #include "TrustedHostKey.hpp"
 #include "JTrustedHostKey.hpp"
+#include "TerminalKey.hpp"
+#include "JTerminalKey.hpp"
 
 namespace margelo::nitro::ella::terminal {
 
@@ -95,6 +100,23 @@ namespace margelo::nitro::ella::terminal {
     static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<JFunc_void_ConnectionStateEvent::javaobject> /* onConnectionStateChange */)>("setOnConnectionStateChange_cxx");
     method(_javaPart, onConnectionStateChange.has_value() ? JFunc_void_ConnectionStateEvent_cxx::fromCpp(onConnectionStateChange.value()) : nullptr);
   }
+  std::optional<std::function<void(bool /* active */)>> JHybridEllaTerminalViewSpec::getOnControlModifierChange() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JFunc_void_bool::javaobject>()>("getOnControlModifierChange_cxx");
+    auto __result = method(_javaPart);
+    return __result != nullptr ? std::make_optional([&]() -> std::function<void(bool /* active */)> {
+      if (__result->isInstanceOf(JFunc_void_bool_cxx::javaClassStatic())) [[likely]] {
+        auto downcast = jni::static_ref_cast<JFunc_void_bool_cxx::javaobject>(__result);
+        return downcast->cthis()->getFunction();
+      } else {
+        auto __resultRef = jni::make_global(__result);
+        return JNICallable<JFunc_void_bool, void(bool)>(std::move(__resultRef));
+      }
+    }()) : std::nullopt;
+  }
+  void JHybridEllaTerminalViewSpec::setOnControlModifierChange(const std::optional<std::function<void(bool /* active */)>>& onControlModifierChange) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<JFunc_void_bool::javaobject> /* onControlModifierChange */)>("setOnControlModifierChange_cxx");
+    method(_javaPart, onControlModifierChange.has_value() ? JFunc_void_bool_cxx::fromCpp(onControlModifierChange.value()) : nullptr);
+  }
   std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>> JHybridEllaTerminalViewSpec::getOnHostKeyRequest() {
     static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JFunc_void_HostKeyRequestEvent::javaobject>()>("getOnHostKeyRequest_cxx");
     auto __result = method(_javaPart);
@@ -125,6 +147,22 @@ namespace margelo::nitro::ella::terminal {
   void JHybridEllaTerminalViewSpec::respondToHostKey(const std::string& connectionId, const std::string& requestId, bool accepted) {
     static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JString> /* connectionId */, jni::alias_ref<jni::JString> /* requestId */, jboolean /* accepted */)>("respondToHostKey");
     method(_javaPart, jni::make_jstring(connectionId), jni::make_jstring(requestId), accepted);
+  }
+  void JHybridEllaTerminalViewSpec::sendKey(TerminalKey key) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<JTerminalKey> /* key */)>("sendKey");
+    method(_javaPart, JTerminalKey::fromCpp(key));
+  }
+  void JHybridEllaTerminalViewSpec::setControlModifier(bool active) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jboolean /* active */)>("setControlModifier");
+    method(_javaPart, active);
+  }
+  void JHybridEllaTerminalViewSpec::showKeyboard() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void()>("showKeyboard");
+    method(_javaPart);
+  }
+  void JHybridEllaTerminalViewSpec::hideKeyboard() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void()>("hideKeyboard");
+    method(_javaPart);
   }
 
 } // namespace margelo::nitro::ella::terminal

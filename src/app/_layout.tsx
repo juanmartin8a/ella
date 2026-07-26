@@ -1,5 +1,6 @@
 import { DarkTheme, Stack, ThemeProvider } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
+import { KeyboardProvider } from 'react-native-keyboard-controller'
 
 import { ConnectionControllerProvider } from '../connection/ConnectionController'
 
@@ -9,25 +10,27 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   return (
-    <ThemeProvider value={DarkTheme}>
-      <ConnectionControllerProvider>
-        <Stack>
-          <Stack.Screen
-            name="index"
-            options={{ title: 'Ella', contentStyle: { paddingBottom: 0 } }}
-          />
-          <Stack.Screen
-            name="connect"
-            options={{
-              presentation: 'formSheet',
-              headerShown: false,
-              sheetAllowedDetents: 'fitToContents',
-              // sheetGrabberVisible: true,
-            }}
-          />
-        </Stack>
-        <StatusBar style="light" />
-      </ConnectionControllerProvider>
-    </ThemeProvider>
+    <KeyboardProvider>
+      <ThemeProvider value={DarkTheme}>
+        <ConnectionControllerProvider>
+          <Stack>
+            <Stack.Screen
+              name="index"
+              options={{ title: 'Ella', contentStyle: { paddingBottom: 0 } }}
+            />
+            <Stack.Screen
+              name="connect"
+              options={{
+                presentation: 'formSheet',
+                headerShown: false,
+                sheetAllowedDetents: 'fitToContents',
+                // sheetGrabberVisible: true,
+              }}
+            />
+          </Stack>
+          <StatusBar style="light" />
+        </ConnectionControllerProvider>
+      </ThemeProvider>
+    </KeyboardProvider>
   )
 }

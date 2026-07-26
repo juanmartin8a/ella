@@ -7,10 +7,16 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import android.view.KeyEvent
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -22,11 +28,13 @@ import java.util.concurrent.atomic.AtomicReference
 import org.connectbot.terminal.Terminal
 import org.connectbot.terminal.TerminalDimensions
 import org.connectbot.terminal.TerminalEmulatorFactory
+import org.connectbot.terminal.ModifierManager
 
 class HybridEllaTerminalView(
   private val reactContext: ThemedReactContext,
 ) : HybridEllaTerminalViewSpec() {
   override var onConnectionStateChange: ((event: ConnectionStateEvent) -> Unit)? = null
+  override var onControlModifierChange: ((active: Boolean) -> Unit)? = null
   override var onHostKeyRequest: ((event: HostKeyRequestEvent) -> Unit)? = null
   override var headerInset: Double = 0.0
 
@@ -35,6 +43,13 @@ class HybridEllaTerminalView(
   private val sessionLock = Any()
   private val mainHandler = Handler(Looper.getMainLooper())
   private val latestDimensions = AtomicReference(TerminalDimensions(rows = 24, columns = 80))
+  private val terminalFocusRequester = FocusRequester()
+  private val showSoftKeyboard = mutableStateOf(true)
+  private val showKeyboardRequest = mutableIntStateOf(0)
+  private var keyboardRequestGeneration = 0
+  private val modifierManager = EllaModifierManager { active ->
+    onControlModifierChange?.invoke(active)
+  }
   private var activeConnection: EllaSshConnection? = null
   private var pendingConnection: PendingConnection? = null
   private val clipboard =
@@ -73,6 +88,16 @@ class HybridEllaTerminalView(
       ViewCompositionStrategy.DisposeOnDetachedFromWindowOrReleasedFromPool,
     )
     setContent {
+      val request = showKeyboardRequest.intValue
+      LaunchedEffect(request) {
+        if (request == 0) return@LaunchedEffect
+        showSoftKeyboard.value = false
+        withFrameNanos { }
+        if (!viewDropped.get() && request == keyboardRequestGeneration) {
+          showSoftKeyboard.value = true
+          runCatching { terminalFocusRequester.requestFocus() }
+        }
+      }
       Terminal(
         terminalEmulator = terminalEmulator,
         modifier = Modifier.fillMaxSize(),
@@ -82,7 +107,9 @@ class HybridEllaTerminalView(
         selectionBackgroundColor = Color(0xFF315A78),
         selectionForegroundColor = Color.White,
         keyboardEnabled = true,
-        showSoftKeyboard = true,
+        showSoftKeyboard = showSoftKeyboard.value,
+        focusRequester = terminalFocusRequester,
+        modifierManager = modifierManager,
         onHyperlinkClick = { link ->
           mainHandler.post { openLink(link) }
         },
@@ -158,6 +185,44 @@ class HybridEllaTerminalView(
     synchronized(sessionLock) {
       activeConnection?.takeIf { it.connectionId == connectionId }
         ?.respondToHostKey(requestId, accepted)
+    }
+  }
+
+  override fun sendKey(key: TerminalKey) {
+    mainHandler.post {
+      if (viewDropped.get()) return@post
+      val keyCode = when (key) {
+        TerminalKey.ESCAPE -> KeyEvent.KEYCODE_ESCAPE
+        TerminalKey.TAB -> KeyEvent.KEYCODE_TAB
+        TerminalKey.LEFT -> KeyEvent.KEYCODE_DPAD_LEFT
+        TerminalKey.UP -> KeyEvent.KEYCODE_DPAD_UP
+        TerminalKey.DOWN -> KeyEvent.KEYCODE_DPAD_DOWN
+        TerminalKey.RIGHT -> KeyEvent.KEYCODE_DPAD_RIGHT
+      }
+      terminalView.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
+      terminalView.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
+    }
+  }
+
+  override fun setControlModifier(active: Boolean) {
+    mainHandler.post {
+      if (!viewDropped.get()) modifierManager.setControlActive(active)
+    }
+  }
+
+  override fun showKeyboard() {
+    mainHandler.post {
+      if (viewDropped.get()) return@post
+      keyboardRequestGeneration += 1
+      showKeyboardRequest.intValue = keyboardRequestGeneration
+    }
+  }
+
+  override fun hideKeyboard() {
+    mainHandler.post {
+      if (viewDropped.get()) return@post
+      keyboardRequestGeneration += 1
+      showSoftKeyboard.value = false
     }
   }
 
@@ -294,6 +359,28 @@ class HybridEllaTerminalView(
       addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
     runCatching { reactContext.startActivity(intent) }
+  }
+}
+
+private class EllaModifierManager(
+  private val onControlChange: (Boolean) -> Unit,
+) : ModifierManager {
+  private var controlActive = false
+
+  override fun isCtrlActive() = controlActive
+
+  override fun isAltActive() = false
+
+  override fun isShiftActive() = false
+
+  override fun clearTransients() {
+    if (controlActive) setControlActive(false)
+  }
+
+  fun setControlActive(active: Boolean) {
+    if (controlActive == active) return
+    controlActive = active
+    onControlChange(active)
   }
 }
 

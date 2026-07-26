@@ -8,6 +8,7 @@ import type {
   EllaTerminalViewMethods,
   EllaTerminalViewProps,
   HostKeyRequestEvent,
+  TerminalKey,
 } from './EllaTerminalView.nitro'
 
 const EllaTerminalHost = getHostComponent<
@@ -19,6 +20,7 @@ export interface EllaTerminalProps extends ViewProps {
   headerInset: number
   hybridRef?: (ref: EllaTerminalView) => void
   onConnectionStateChange?: (event: ConnectionStateEvent) => void
+  onControlModifierChange?: (active: boolean) => void
   onHostKeyRequest?: (event: HostKeyRequestEvent) => void
 }
 
@@ -26,6 +28,7 @@ export function EllaTerminal({
   headerInset,
   hybridRef,
   onConnectionStateChange,
+  onControlModifierChange,
   onHostKeyRequest,
   ...viewProps
 }: EllaTerminalProps) {
@@ -35,6 +38,7 @@ export function EllaTerminal({
       headerInset={headerInset}
       hybridRef={callback(hybridRef)}
       onConnectionStateChange={callback(onConnectionStateChange)}
+      onControlModifierChange={callback(onControlModifierChange)}
       onHostKeyRequest={callback(onHostKeyRequest)}
     />
   )
@@ -48,6 +52,7 @@ export type {
   EllaTerminalViewMethods,
   EllaTerminalViewProps,
   HostKeyRequestEvent,
+  TerminalKey,
   TerminalErrorCode,
   TrustedHostKey,
 } from './EllaTerminalView.nitro'

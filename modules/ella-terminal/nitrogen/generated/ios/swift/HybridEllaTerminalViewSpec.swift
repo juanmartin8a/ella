@@ -12,12 +12,17 @@ public protocol HybridEllaTerminalViewSpec_protocol: HybridObject, HybridView {
   // Properties
   var headerInset: Double { get set }
   var onConnectionStateChange: ((_ event: ConnectionStateEvent) -> Void)? { get set }
+  var onControlModifierChange: ((_ active: Bool) -> Void)? { get set }
   var onHostKeyRequest: ((_ event: HostKeyRequestEvent) -> Void)? { get set }
 
   // Methods
   func connect(config: ConnectionConfig) throws -> Void
   func disconnect(connectionId: String) throws -> Void
   func respondToHostKey(connectionId: String, requestId: String, accepted: Bool) throws -> Void
+  func sendKey(key: TerminalKey) throws -> Void
+  func setControlModifier(active: Bool) throws -> Void
+  func showKeyboard() throws -> Void
+  func hideKeyboard() throws -> Void
 }
 
 public extension HybridEllaTerminalViewSpec_protocol {

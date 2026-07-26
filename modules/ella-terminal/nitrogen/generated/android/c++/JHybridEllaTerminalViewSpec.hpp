@@ -54,6 +54,8 @@ namespace margelo::nitro::ella::terminal {
     void setHeaderInset(double headerInset) override;
     std::optional<std::function<void(const ConnectionStateEvent& /* event */)>> getOnConnectionStateChange() override;
     void setOnConnectionStateChange(const std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>& onConnectionStateChange) override;
+    std::optional<std::function<void(bool /* active */)>> getOnControlModifierChange() override;
+    void setOnControlModifierChange(const std::optional<std::function<void(bool /* active */)>>& onControlModifierChange) override;
     std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>> getOnHostKeyRequest() override;
     void setOnHostKeyRequest(const std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>& onHostKeyRequest) override;
 
@@ -62,6 +64,10 @@ namespace margelo::nitro::ella::terminal {
     void connect(const ConnectionConfig& config) override;
     void disconnect(const std::string& connectionId) override;
     void respondToHostKey(const std::string& connectionId, const std::string& requestId, bool accepted) override;
+    void sendKey(TerminalKey key) override;
+    void setControlModifier(bool active) override;
+    void showKeyboard() override;
+    void hideKeyboard() override;
 
   private:
     jni::global_ref<JHybridEllaTerminalViewSpec::JavaPart> _javaPart;

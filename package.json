@@ -20,6 +20,7 @@
     "expo-system-ui": "~57.0.1",
     "react": "19.2.3",
     "react-native": "0.86.0",
+    "react-native-keyboard-controller": "1.21.9",
     "react-native-nitro-modules": "0.36.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "4.25.2"
@@ -30,6 +31,14 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "eas-build-pre-install": "if [ \"$EAS_BUILD_PLATFORM\" = \"ios\" ]; then if [ -x /opt/homebrew/opt/ruby/bin/bundle ]; then /opt/homebrew/opt/ruby/bin/bundle install; else bundle install; fi; fi"
+  },
+  "reanimated": {
+    "staticFeatureFlags": {
+      "DISABLE_COMMIT_PAUSING_MECHANISM": true
+    }
+  },
+  "patchedDependencies": {
+    "react-native@0.86.0": "patches/react-native@0.86.0.patch"
   },
   "private": true,
   "devDependencies": {

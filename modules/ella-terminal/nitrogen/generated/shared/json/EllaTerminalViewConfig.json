@@ -6,6 +6,7 @@
   "validAttributes": {
     "headerInset": true,
     "onConnectionStateChange": true,
+    "onControlModifierChange": true,
     "onHostKeyRequest": true,
     "hybridRef": true
   }

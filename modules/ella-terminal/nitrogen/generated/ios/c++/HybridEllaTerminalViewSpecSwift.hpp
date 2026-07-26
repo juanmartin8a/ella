@@ -24,6 +24,8 @@ namespace margelo::nitro::ella::terminal { struct HostKeyRequestEvent; }
 namespace margelo::nitro::ella::terminal { struct ConnectionConfig; }
 // Forward declaration of `TrustedHostKey` to properly resolve imports.
 namespace margelo::nitro::ella::terminal { struct TrustedHostKey; }
+// Forward declaration of `TerminalKey` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { enum class TerminalKey; }
 
 #include "ConnectionStateEvent.hpp"
 #include <functional>
@@ -34,6 +36,7 @@ namespace margelo::nitro::ella::terminal { struct TrustedHostKey; }
 #include "HostKeyRequestEvent.hpp"
 #include "ConnectionConfig.hpp"
 #include "TrustedHostKey.hpp"
+#include "TerminalKey.hpp"
 
 #include "EllaTerminal-Swift-Cxx-Umbrella.hpp"
 
@@ -94,6 +97,13 @@ namespace margelo::nitro::ella::terminal {
     inline void setOnConnectionStateChange(const std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>& onConnectionStateChange) noexcept override {
       _swiftPart.setOnConnectionStateChange(onConnectionStateChange);
     }
+    inline std::optional<std::function<void(bool /* active */)>> getOnControlModifierChange() noexcept override {
+      auto __result = _swiftPart.getOnControlModifierChange();
+      return __result;
+    }
+    inline void setOnControlModifierChange(const std::optional<std::function<void(bool /* active */)>>& onControlModifierChange) noexcept override {
+      _swiftPart.setOnControlModifierChange(onControlModifierChange);
+    }
     inline std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>> getOnHostKeyRequest() noexcept override {
       auto __result = _swiftPart.getOnHostKeyRequest();
       return __result;
@@ -118,6 +128,30 @@ namespace margelo::nitro::ella::terminal {
     }
     inline void respondToHostKey(const std::string& connectionId, const std::string& requestId, bool accepted) override {
       auto __result = _swiftPart.respondToHostKey(connectionId, requestId, std::forward<decltype(accepted)>(accepted));
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+    }
+    inline void sendKey(TerminalKey key) override {
+      auto __result = _swiftPart.sendKey(static_cast<int>(key));
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+    }
+    inline void setControlModifier(bool active) override {
+      auto __result = _swiftPart.setControlModifier(std::forward<decltype(active)>(active));
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+    }
+    inline void showKeyboard() override {
+      auto __result = _swiftPart.showKeyboard();
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+    }
+    inline void hideKeyboard() override {
+      auto __result = _swiftPart.hideKeyboard();
       if (__result.hasError()) [[unlikely]] {
         std::rethrow_exception(__result.error());
       }

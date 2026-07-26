@@ -20,6 +20,8 @@ namespace margelo::nitro::ella::terminal { struct HostKeyRequestEvent; }
 namespace margelo::nitro::ella::terminal { class HybridEllaTerminalViewSpec; }
 // Forward declaration of `TerminalErrorCode` to properly resolve imports.
 namespace margelo::nitro::ella::terminal { enum class TerminalErrorCode; }
+// Forward declaration of `TerminalKey` to properly resolve imports.
+namespace margelo::nitro::ella::terminal { enum class TerminalKey; }
 // Forward declaration of `TrustedHostKey` to properly resolve imports.
 namespace margelo::nitro::ella::terminal { struct TrustedHostKey; }
 
@@ -30,6 +32,7 @@ namespace margelo::nitro::ella::terminal { struct TrustedHostKey; }
 #include "HostKeyRequestEvent.hpp"
 #include "HybridEllaTerminalViewSpec.hpp"
 #include "TerminalErrorCode.hpp"
+#include "TerminalKey.hpp"
 #include "TrustedHostKey.hpp"
 #include <NitroModules/Result.hpp>
 #include <exception>

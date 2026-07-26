@@ -18,11 +18,17 @@ namespace margelo::nitro::ella::terminal {
       prototype.registerHybridSetter("headerInset", &HybridEllaTerminalViewSpec::setHeaderInset);
       prototype.registerHybridGetter("onConnectionStateChange", &HybridEllaTerminalViewSpec::getOnConnectionStateChange);
       prototype.registerHybridSetter("onConnectionStateChange", &HybridEllaTerminalViewSpec::setOnConnectionStateChange);
+      prototype.registerHybridGetter("onControlModifierChange", &HybridEllaTerminalViewSpec::getOnControlModifierChange);
+      prototype.registerHybridSetter("onControlModifierChange", &HybridEllaTerminalViewSpec::setOnControlModifierChange);
       prototype.registerHybridGetter("onHostKeyRequest", &HybridEllaTerminalViewSpec::getOnHostKeyRequest);
       prototype.registerHybridSetter("onHostKeyRequest", &HybridEllaTerminalViewSpec::setOnHostKeyRequest);
       prototype.registerHybridMethod("connect", &HybridEllaTerminalViewSpec::connect);
       prototype.registerHybridMethod("disconnect", &HybridEllaTerminalViewSpec::disconnect);
       prototype.registerHybridMethod("respondToHostKey", &HybridEllaTerminalViewSpec::respondToHostKey);
+      prototype.registerHybridMethod("sendKey", &HybridEllaTerminalViewSpec::sendKey);
+      prototype.registerHybridMethod("setControlModifier", &HybridEllaTerminalViewSpec::setControlModifier);
+      prototype.registerHybridMethod("showKeyboard", &HybridEllaTerminalViewSpec::showKeyboard);
+      prototype.registerHybridMethod("hideKeyboard", &HybridEllaTerminalViewSpec::hideKeyboard);
     });
   }
 

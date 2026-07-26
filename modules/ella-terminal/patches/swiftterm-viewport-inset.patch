@@ -121,15 +121,10 @@ index 98a040c..0352269 100644
          setContentOffsetFromTerminal(CGPoint (x: 0, y: offsetY))
          //Xscroller.doubleValue = scrollPosition
          //Xscroller.knobProportion = scrollThumbsize
-@@ -1519,6 +1554,15 @@ open class TerminalView: UIScrollView, UITextInputTraits, UIKeyInput, UIScrollVi
-          1 / max(backingScaleFactor(), 1)
-      }
+@@ -1519,6 +1554,10 @@ open class TerminalView: UIScrollView, UITextInputTraits, UIKeyInput, UIScrollVi
+         1 / max(backingScaleFactor(), 1)
+     }
  
-+#if DEBUG
-+    public var diagnosticYDisp: Int { terminal.displayBuffer.yDisp }
-+    public var diagnosticUserScrolling: Bool { userScrolling }
-+#endif
-+
 +    private func minContentOffsetY() -> CGFloat {
 +        -viewportTopInset
 +    }

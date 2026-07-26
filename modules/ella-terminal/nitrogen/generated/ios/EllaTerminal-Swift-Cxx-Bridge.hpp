@@ -59,7 +59,7 @@ namespace margelo::nitro::ella::terminal::bridge::swift {
   inline TerminalErrorCode get_std__optional_TerminalErrorCode_(const std::optional<TerminalErrorCode>& optional) noexcept {
     return optional.value();
   }
-  
+
   // pragma MARK: std::optional<std::string>
   /**
    * Specialized version of `std::optional<std::string>`.
@@ -74,7 +74,7 @@ namespace margelo::nitro::ella::terminal::bridge::swift {
   inline std::string get_std__optional_std__string_(const std::optional<std::string>& optional) noexcept {
     return optional.value();
   }
-  
+
   // pragma MARK: std::function<void(const ConnectionStateEvent& /* event */)>
   /**
    * Specialized version of `std::function<void(const ConnectionStateEvent&)>`.
@@ -96,7 +96,7 @@ namespace margelo::nitro::ella::terminal::bridge::swift {
   inline Func_void_ConnectionStateEvent_Wrapper wrap_Func_void_ConnectionStateEvent(Func_void_ConnectionStateEvent value) noexcept {
     return Func_void_ConnectionStateEvent_Wrapper(std::move(value));
   }
-  
+
   // pragma MARK: std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>
   /**
    * Specialized version of `std::optional<std::function<void(const ConnectionStateEvent& / * event * /)>>`.
@@ -111,7 +111,44 @@ namespace margelo::nitro::ella::terminal::bridge::swift {
   inline std::function<void(const ConnectionStateEvent& /* event */)> get_std__optional_std__function_void_const_ConnectionStateEvent_____event______(const std::optional<std::function<void(const ConnectionStateEvent& /* event */)>>& optional) noexcept {
     return optional.value();
   }
-  
+
+  // pragma MARK: std::function<void(bool /* active */)>
+  /**
+   * Specialized version of `std::function<void(bool)>`.
+   */
+  using Func_void_bool = std::function<void(bool /* active */)>;
+  /**
+   * Wrapper class for a `std::function<void(bool / * active * /)>`, this can be used from Swift.
+   */
+  class Func_void_bool_Wrapper final {
+  public:
+    explicit Func_void_bool_Wrapper(std::function<void(bool /* active */)>&& func): _function(std::make_unique<std::function<void(bool /* active */)>>(std::move(func))) {}
+    inline void call(bool active) const noexcept {
+      _function->operator()(active);
+    }
+  private:
+    std::unique_ptr<std::function<void(bool /* active */)>> _function;
+  } SWIFT_NONCOPYABLE;
+  Func_void_bool create_Func_void_bool(void* NON_NULL swiftClosureWrapper) noexcept;
+  inline Func_void_bool_Wrapper wrap_Func_void_bool(Func_void_bool value) noexcept {
+    return Func_void_bool_Wrapper(std::move(value));
+  }
+
+  // pragma MARK: std::optional<std::function<void(bool /* active */)>>
+  /**
+   * Specialized version of `std::optional<std::function<void(bool / * active * /)>>`.
+   */
+  using std__optional_std__function_void_bool____active______ = std::optional<std::function<void(bool /* active */)>>;
+  inline std::optional<std::function<void(bool /* active */)>> create_std__optional_std__function_void_bool____active______(const std::function<void(bool /* active */)>& value) noexcept {
+    return std::optional<std::function<void(bool /* active */)>>(value);
+  }
+  inline bool has_value_std__optional_std__function_void_bool____active______(const std::optional<std::function<void(bool /* active */)>>& optional) noexcept {
+    return optional.has_value();
+  }
+  inline std::function<void(bool /* active */)> get_std__optional_std__function_void_bool____active______(const std::optional<std::function<void(bool /* active */)>>& optional) noexcept {
+    return optional.value();
+  }
+
   // pragma MARK: std::function<void(const HostKeyRequestEvent& /* event */)>
   /**
    * Specialized version of `std::function<void(const HostKeyRequestEvent&)>`.
@@ -133,7 +170,7 @@ namespace margelo::nitro::ella::terminal::bridge::swift {
   inline Func_void_HostKeyRequestEvent_Wrapper wrap_Func_void_HostKeyRequestEvent(Func_void_HostKeyRequestEvent value) noexcept {
     return Func_void_HostKeyRequestEvent_Wrapper(std::move(value));
   }
-  
+
   // pragma MARK: std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>
   /**
    * Specialized version of `std::optional<std::function<void(const HostKeyRequestEvent& / * event * /)>>`.
@@ -148,7 +185,7 @@ namespace margelo::nitro::ella::terminal::bridge::swift {
   inline std::function<void(const HostKeyRequestEvent& /* event */)> get_std__optional_std__function_void_const_HostKeyRequestEvent_____event______(const std::optional<std::function<void(const HostKeyRequestEvent& /* event */)>>& optional) noexcept {
     return optional.value();
   }
-  
+
   // pragma MARK: std::optional<TrustedHostKey>
   /**
    * Specialized version of `std::optional<TrustedHostKey>`.
@@ -163,7 +200,7 @@ namespace margelo::nitro::ella::terminal::bridge::swift {
   inline TrustedHostKey get_std__optional_TrustedHostKey_(const std::optional<TrustedHostKey>& optional) noexcept {
     return optional.value();
   }
-  
+
   // pragma MARK: std::shared_ptr<HybridEllaTerminalViewSpec>
   /**
    * Specialized version of `std::shared_ptr<HybridEllaTerminalViewSpec>`.
@@ -171,11 +208,11 @@ namespace margelo::nitro::ella::terminal::bridge::swift {
   using std__shared_ptr_HybridEllaTerminalViewSpec_ = std::shared_ptr<HybridEllaTerminalViewSpec>;
   std::shared_ptr<HybridEllaTerminalViewSpec> create_std__shared_ptr_HybridEllaTerminalViewSpec_(void* NON_NULL swiftUnsafePointer) noexcept;
   void* NON_NULL get_std__shared_ptr_HybridEllaTerminalViewSpec_(std__shared_ptr_HybridEllaTerminalViewSpec_ cppType);
-  
+
   // pragma MARK: std::weak_ptr<HybridEllaTerminalViewSpec>
   using std__weak_ptr_HybridEllaTerminalViewSpec_ = std::weak_ptr<HybridEllaTerminalViewSpec>;
   inline std__weak_ptr_HybridEllaTerminalViewSpec_ weakify_std__shared_ptr_HybridEllaTerminalViewSpec_(const std::shared_ptr<HybridEllaTerminalViewSpec>& strong) noexcept { return strong; }
-  
+
   // pragma MARK: Result<void>
   using Result_void_ = Result<void>;
   inline Result_void_ create_Result_void_() noexcept {
