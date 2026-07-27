@@ -14,11 +14,7 @@ final class HybridEllaTerminalView: HybridEllaTerminalViewSpec, TerminalViewDele
   var onConnectionStateChange: ((ConnectionStateEvent) -> Void)?
   var onControlModifierChange: ((Bool) -> Void)?
   var onHostKeyRequest: ((HostKeyRequestEvent) -> Void)?
-  var headerInset: Double = 0 {
-    didSet {
-      terminalView.topInset = CGFloat(max(0, headerInset))
-    }
-  }
+  var headerInset: Double = 0
 
   var view: UIView { containerView }
 
@@ -252,12 +248,6 @@ private final class EllaSwiftTermView: TerminalView {
   @objc var inputAccessoryViewID: String? { "ella-terminal-extra-keys" }
   var onFirstLayout: (() -> Void)?
 
-  var topInset: CGFloat = 0 {
-    didSet {
-      viewportTopInset = max(0, topInset)
-    }
-  }
-
   override func layoutSubviews() {
     super.layoutSubviews()
     guard !bounds.isEmpty, let onFirstLayout else { return }
@@ -302,14 +292,136 @@ private final class EllaSwiftTermView: TerminalView {
 }
 
 private final class TerminalContainer: UIView {
+  private weak var terminalView: UIView?
+  private var terminalBottomConstraint: NSLayoutConstraint?
+  private var containerBottomConstraint: NSLayoutConstraint?
+  private var keyboardObservers: [NSObjectProtocol] = []
+
+  deinit {
+    keyboardObservers.forEach(NotificationCenter.default.removeObserver)
+  }
+
   func install(_ terminalView: UIView) {
+    self.terminalView = terminalView
     terminalView.translatesAutoresizingMaskIntoConstraints = false
     addSubview(terminalView)
+    keyboardLayoutGuide.usesBottomSafeArea = false
+    let terminalBottomConstraint = terminalView.bottomAnchor.constraint(
+      equalTo: keyboardLayoutGuide.topAnchor
+    )
+    let containerBottomConstraint = terminalView.bottomAnchor.constraint(equalTo: bottomAnchor)
+    self.terminalBottomConstraint = terminalBottomConstraint
+    self.containerBottomConstraint = containerBottomConstraint
     NSLayoutConstraint.activate([
       terminalView.topAnchor.constraint(equalTo: topAnchor),
       terminalView.leadingAnchor.constraint(equalTo: leadingAnchor),
       terminalView.trailingAnchor.constraint(equalTo: trailingAnchor),
-      terminalView.bottomAnchor.constraint(equalTo: bottomAnchor),
+      containerBottomConstraint,
     ])
+
+    let center = NotificationCenter.default
+    keyboardObservers = [
+      center.addObserver(
+        forName: UIResponder.keyboardWillShowNotification,
+        object: nil,
+        queue: .main
+      ) { [weak self] notification in
+        self?.animateTerminalToKeyboard(with: notification)
+      },
+      center.addObserver(
+        forName: UIResponder.keyboardWillChangeFrameNotification,
+        object: nil,
+        queue: .main
+      ) { [weak self] notification in
+        self?.keyboardWillChangeFrame(notification)
+      },
+      center.addObserver(
+        forName: UIResponder.keyboardWillHideNotification,
+        object: nil,
+        queue: .main
+      ) { [weak self] notification in
+        self?.animateTerminalToBottom(with: notification)
+      },
+    ]
+  }
+
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    updateTerminalBottom()
+  }
+
+  override func didMoveToWindow() {
+    super.didMoveToWindow()
+    if window != nil {
+      updateTerminalBottom()
+    }
+  }
+
+  private func keyboardWillChangeFrame(_ notification: Notification) {
+    guard
+      let frameValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+    else { return }
+    let keyboardFrame = convert(frameValue.cgRectValue, from: nil)
+    if keyboardFrame.minY >= bounds.maxY - 0.5 {
+      if containerBottomConstraint?.isActive != true {
+        animateTerminalToBottom(with: notification)
+      }
+      return
+    }
+
+    animateTerminalToKeyboard(with: notification)
+  }
+
+  private func animateTerminalToKeyboard(with notification: Notification) {
+    guard let terminalBottomConstraint, let containerBottomConstraint else { return }
+    guard containerBottomConstraint.isActive else { return }
+    layoutIfNeeded()
+    if let accessoryHeight = terminalView?.inputAccessoryView?.bounds.height,
+       accessoryHeight > 0 {
+      terminalBottomConstraint.constant = -accessoryHeight
+    }
+    containerBottomConstraint.isActive = false
+    terminalBottomConstraint.isActive = true
+    animateLayout(with: notification)
+  }
+
+  private func animateTerminalToBottom(with notification: Notification) {
+    guard let terminalBottomConstraint, let containerBottomConstraint else { return }
+    guard !containerBottomConstraint.isActive else { return }
+    layoutIfNeeded()
+    terminalBottomConstraint.isActive = false
+    containerBottomConstraint.isActive = true
+    animateLayout(with: notification)
+  }
+
+  private func animateLayout(with notification: Notification) {
+    let duration =
+      (notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?
+      .doubleValue ?? 0.25
+    let curve =
+      (notification.userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber)?
+      .uintValue ?? UInt(UIView.AnimationCurve.easeInOut.rawValue)
+    let curveOption = UIView.AnimationOptions(rawValue: curve << 16)
+    UIView.animate(
+      withDuration: duration,
+      delay: 0,
+      options: [curveOption, .beginFromCurrentState, .allowUserInteraction]
+    ) { [weak self] in
+      self?.layoutIfNeeded()
+    }
+  }
+
+  private func updateTerminalBottom() {
+    guard
+      let accessoryView = terminalView?.inputAccessoryView,
+      accessoryView.window != nil
+    else { return }
+
+    let guideTop = keyboardLayoutGuide.layoutFrame.minY
+    let accessoryTop = accessoryView.convert(accessoryView.bounds, to: self).minY
+    let accessoryOffset = min(0, accessoryTop - guideTop)
+    if terminalBottomConstraint?.constant != accessoryOffset {
+      terminalBottomConstraint?.constant = accessoryOffset
+    }
   }
 }

@@ -4,7 +4,6 @@ import { EllaTerminal } from 'ella-terminal'
 import { router, Stack } from 'expo-router'
 import { useHeaderHeight } from 'expo-router/react-navigation'
 import { InputAccessoryView, Platform, StyleSheet, View } from 'react-native'
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller'
 
 import { TerminalExtraKeys } from '../components/TerminalExtraKeys'
 import { useConnectionController } from '../connection/ConnectionController'
@@ -42,10 +41,9 @@ export default function TerminalScreen() {
 
   return (
     <View style={styles.container}>
-      <Stack.Header
-        transparent
-      />
-      <Stack.Title>{title}</Stack.Title>
+    <Stack.Header
+      transparent
+    />
       <Stack.Toolbar placement="right">
         <Stack.Toolbar.Button
           accessibilityLabel={connected ? 'Disconnect' : 'Connect'}
@@ -56,10 +54,10 @@ export default function TerminalScreen() {
           {connected ? 'Disconnect' : 'Connect'}
         </Stack.Toolbar.Button>
       </Stack.Toolbar>
-      <KeyboardAvoidingView behavior="translate-with-padding" style={styles.terminalArea}>
+      <View style={styles.terminalArea}>
 
         <EllaTerminal
-          headerInset={headerInset}
+          headerInset={0.0}
           hybridRef={controller.hybridRef}
           onConnectionStateChange={controller.onConnectionStateChange}
           onControlModifierChange={controller.onControlModifierChange}
@@ -91,7 +89,7 @@ export default function TerminalScreen() {
             />
           </InputAccessoryView>
         )}
-      </KeyboardAvoidingView>
+      </View>
     </View>
   )
 }
