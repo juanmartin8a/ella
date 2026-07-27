@@ -33,14 +33,6 @@
     "web": "expo start --web",
     "eas-build-pre-install": "if [ \"$EAS_BUILD_PLATFORM\" = \"ios\" ]; then if [ -x /opt/homebrew/opt/ruby/bin/bundle ]; then /opt/homebrew/opt/ruby/bin/bundle install; else bundle install; fi; fi"
   },
-  "reanimated": {
-    "staticFeatureFlags": {
-      "DISABLE_COMMIT_PAUSING_MECHANISM": true
-    }
-  },
-  "patchedDependencies": {
-    "react-native@0.86.0": "patches/react-native@0.86.0.patch"
-  },
   "private": true,
   "devDependencies": {
     "@types/react": "^19.2.17",
