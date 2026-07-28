@@ -46,9 +46,7 @@ function RootStack() {
           contentStyle: {
             paddingBottom: 0,
           },
-          // headerTransparent: true,
-          // headerShadowVisible: true,
-          // headerBlurEffect: 'systemUltraThinMaterialDark',
+          headerTransparent: true,
         }}
       />
       <Stack.Screen

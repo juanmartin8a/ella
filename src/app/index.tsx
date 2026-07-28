@@ -41,9 +41,6 @@ export default function TerminalScreen() {
 
   return (
     <View style={styles.container}>
-    <Stack.Header
-      transparent
-    />
       <Stack.Toolbar placement="right">
         <Stack.Toolbar.Button
           accessibilityLabel={connected ? 'Disconnect' : 'Connect'}
